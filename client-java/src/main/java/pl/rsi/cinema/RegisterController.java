@@ -4,10 +4,9 @@ import javafx.scene.control.Alert;
 
 public class RegisterController {
 
-    private static final UserService userService = UserService.getInstance();
-
     // Metoda statyczna do walidacji - wywoływana przez BookingController
-    public static String validateRegister(String name, String surname, String email, String password, String confirmPassword) {
+    public static String validateRegister(String name, String surname, String email, String password,
+            String confirmPassword) {
         if (name == null || name.trim().isEmpty())
             return "Proszę wprowadzić imię";
         if (surname == null || surname.trim().isEmpty())

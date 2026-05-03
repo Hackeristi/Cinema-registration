@@ -80,9 +80,9 @@ public class CinemaServerService {
                     .header("SOAPAction", "http://tempuri.org/GetMovies")
                     .POST(HttpRequest.BodyPublishers.ofString(
                             "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                            "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-                            "<soap:Body><GetMovies xmlns=\"http://tempuri.org/\" /></soap:Body>" +
-                            "</soap:Envelope>"))
+                                    "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                                    "<soap:Body><GetMovies xmlns=\"http://tempuri.org/\" /></soap:Body>" +
+                                    "</soap:Envelope>"))
                     .timeout(java.time.Duration.ofSeconds(5))
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -106,8 +106,6 @@ public class CinemaServerService {
                     "</soap:Envelope>";
 
             String xml = sendSoap("GetMovies", soap);
-
-            System.out.println(xml);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -197,7 +195,6 @@ public class CinemaServerService {
             Element res = (Element) doc.getElementsByTagNameNS("*", "GetMovieDetailsResult").item(0);
 
             if (res == null) {
-                System.err.println("DEBUG: Serwer nie zwrócił danych w GetMovieDetailsResult.");
                 return null;
             }
 
@@ -217,6 +214,7 @@ public class CinemaServerService {
             return null;
         }
     }
+
     // =========================================================
     // 🖼 MOVIE POSTER (MTOM)
     // =========================================================
@@ -245,8 +243,6 @@ public class CinemaServerService {
             }
 
             String contentType = response.headers().firstValue("Content-Type").orElse("");
-            System.out.println("=== GetMoviePoster Content-Type: " + contentType);
-
             if (contentType.contains("multipart/related")) {
                 lastPosterWasMtom = true;
                 return extractMtomBinaryPart(response.body(), contentType);
@@ -254,12 +250,12 @@ public class CinemaServerService {
                 lastPosterWasMtom = false;
                 // Fallback: Base64 in regular XML response
                 String xml = new String(response.body(), "UTF-8");
-                System.out.println("=== GetMoviePoster fallback XML (first 500): " + xml.substring(0, Math.min(500, xml.length())));
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
                 Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
                 Element result = (Element) doc.getElementsByTagNameNS("*", "GetMoviePosterResult").item(0);
-                if (result == null) return null;
+                if (result == null)
+                    return null;
                 return Base64.getDecoder().decode(result.getTextContent().trim());
             }
         } catch (Exception e) {
@@ -276,30 +272,37 @@ public class CinemaServerService {
                 boundary = param.substring(9).replace("\"", "").trim();
             }
         }
-        if (boundary == null) throw new RuntimeException("No MIME boundary in Content-Type");
+        if (boundary == null)
+            throw new RuntimeException("No MIME boundary in Content-Type");
 
         byte[] delimiter = ("\r\n--" + boundary).getBytes("UTF-8");
         byte[] firstDelimiter = ("--" + boundary).getBytes("UTF-8");
 
         List<byte[]> parts = new ArrayList<>();
         int start = indexOfBytes(body, firstDelimiter, 0);
-        if (start == -1) throw new RuntimeException("MIME boundary not found in response body");
+        if (start == -1)
+            throw new RuntimeException("MIME boundary not found in response body");
         start += firstDelimiter.length;
 
         while (start < body.length) {
-            if (start + 1 < body.length && body[start] == '\r' && body[start + 1] == '\n') start += 2;
-            else if (start < body.length && body[start] == '\n') start += 1;
+            if (start + 1 < body.length && body[start] == '\r' && body[start + 1] == '\n')
+                start += 2;
+            else if (start < body.length && body[start] == '\n')
+                start += 1;
 
             int end = indexOfBytes(body, delimiter, start);
-            if (end == -1) break;
+            if (end == -1)
+                break;
             parts.add(Arrays.copyOfRange(body, start, end));
             start = end + delimiter.length;
-            if (start + 1 < body.length && body[start] == '-' && body[start + 1] == '-') break;
+            if (start + 1 < body.length && body[start] == '-' && body[start + 1] == '-')
+                break;
         }
 
         for (byte[] part : parts) {
             int headerEnd = indexOfCrLfCrLf(part);
-            if (headerEnd == -1) continue;
+            if (headerEnd == -1)
+                continue;
             String headers = new String(part, 0, headerEnd, "UTF-8");
             if (!headers.contains("application/xop+xml") && !headers.contains("text/xml")) {
                 int dataStart = headerEnd + 4;
@@ -310,10 +313,10 @@ public class CinemaServerService {
     }
 
     private int indexOfBytes(byte[] source, byte[] target, int fromIndex) {
-        outer:
-        for (int i = fromIndex; i <= source.length - target.length; i++) {
+        outer: for (int i = fromIndex; i <= source.length - target.length; i++) {
             for (int j = 0; j < target.length; j++) {
-                if (source[i + j] != target[j]) continue outer;
+                if (source[i + j] != target[j])
+                    continue outer;
             }
             return i;
         }
@@ -398,16 +401,7 @@ public class CinemaServerService {
                     "</soap:Body>" +
                     "</soap:Envelope>";
 
-            System.out.println("=== SOAP DEBUG GetShowtimes ===");
-            System.out.println("movieId = " + movieId);
-            System.out.println("raw date = [" + date + "]");
-            System.out.println("formatted date = [" + formatted + "]");
-            System.out.println("is yyyy-MM-dd = " + formatted.matches("\\d{4}-\\d{2}-\\d{2}"));
-            System.out.println(soap);
-
             String xml = sendSoap("GetShowtimes", soap);
-            System.out.println("=== SOAP RESPONSE GetShowtimes ===");
-            System.out.println(xml);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -480,7 +474,8 @@ public class CinemaServerService {
             Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
             Element result = (Element) doc.getElementsByTagNameNS("*", "LoginResult").item(0);
-            if (result == null) return null;
+            if (result == null)
+                return null;
 
             String userIdStr = getValue(result, "UserId");
             int userId = (userIdStr != null && !userIdStr.isBlank()) ? Integer.parseInt(userIdStr) : 0;
@@ -500,7 +495,8 @@ public class CinemaServerService {
     // =========================================================
     // 🔐 AUTH: REGISTER
     // =========================================================
-    public RegisterResultDto register(String name, String surname, String email, String password, String confirmPassword) {
+    public RegisterResultDto register(String name, String surname, String email, String password,
+            String confirmPassword) {
         try {
             String soap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                     "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
@@ -515,20 +511,15 @@ public class CinemaServerService {
                     "</soap:Body>" +
                     "</soap:Envelope>";
 
-            System.out.println("=== REGISTER REQUEST ===");
-            System.out.println(soap);
-
             String xml = sendSoap("Register", soap);
-
-            System.out.println("=== REGISTER RESPONSE ===");
-            System.out.println(xml);
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
             Element result = (Element) doc.getElementsByTagNameNS("*", "RegisterResult").item(0);
-            if (result == null) return null;
+            if (result == null)
+                return null;
 
             String userIdStr = getValue(result, "UserId");
             int userId = (userIdStr != null && !userIdStr.isBlank()) ? Integer.parseInt(userIdStr) : 0;
@@ -549,6 +540,100 @@ public class CinemaServerService {
     // =========================================================
     // 📋 RESERVATIONS
     // =========================================================
+
+    public List<UserReservationDto> getUserReservations(int userId) {
+        try {
+            String soap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                    "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body>" +
+                    "<GetUserReservations xmlns=\"http://tempuri.org/\">" +
+                    "<userId>" + userId + "</userId>" +
+                    "</GetUserReservations>" +
+                    "</soap:Body>" +
+                    "</soap:Envelope>";
+
+            String xml = sendSoap("GetUserReservations", soap);
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+
+            Document doc = factory.newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+            NodeList nodes = doc.getElementsByTagNameNS("*", "ReservationDto");
+
+            List<UserReservationDto> list = new ArrayList<>();
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element e = (Element) nodes.item(i);
+
+                int reservationId = Integer.parseInt(getValue(e, "ReservationId"));
+                String title = getValue(e, "Title");
+                String showDatetime = getValue(e, "ShowDatetime");
+
+                // 🔥 SEATS (lista <string>)
+                NodeList seatsNodes = e.getElementsByTagNameNS("*", "string");
+                int filmShowId = Integer.parseInt(getValue(e, "FilmShowId"));
+                StringBuilder seatsBuilder = new StringBuilder();
+                for (int j = 0; j < seatsNodes.getLength(); j++) {
+                    if (j > 0)
+                        seatsBuilder.append(", ");
+                    seatsBuilder.append(seatsNodes.item(j).getTextContent());
+                }
+
+                list.add(new UserReservationDto(
+                        reservationId,
+                        title,
+                        showDatetime,
+                        filmShowId,
+                        seatsBuilder.toString()));
+            }
+
+            return list;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public static class UserReservationDto {
+        private final int reservationId;
+        private final String title;
+        private final String showDatetime;
+        private final int filmShowId; // 🔥 NOWE
+        private final String seats;
+
+        public UserReservationDto(int reservationId, String title,
+                String showDatetime, int filmShowId, String seats) {
+            this.reservationId = reservationId;
+            this.title = title;
+            this.showDatetime = showDatetime;
+            this.filmShowId = filmShowId;
+            this.seats = seats;
+        }
+
+        public int getReservationId() {
+            return reservationId;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getShowDatetime() {
+            return showDatetime;
+        }
+
+        public int getFilmShowId() {
+            return filmShowId;
+        }
+
+        public String getSeats() {
+            return seats;
+        }
+    }
+
     public ReservationCreateResultDto createReservation(int userId, int filmShowId, List<Integer> seatIds) {
         try {
             StringBuilder seatsXml = new StringBuilder(
@@ -576,7 +661,8 @@ public class CinemaServerService {
             Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
             Element result = (Element) doc.getElementsByTagNameNS("*", "CreateReservationResult").item(0);
-            if (result == null) return null;
+            if (result == null)
+                return null;
 
             String idStr = getValue(result, "ReservationId");
             int reservationId = (idStr != null && !idStr.isBlank()) ? Integer.parseInt(idStr) : 0;
@@ -607,7 +693,8 @@ public class CinemaServerService {
             Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 
             Element result = (Element) doc.getElementsByTagNameNS("*", "ReservationDeleteResult").item(0);
-            if (result == null) return false;
+            if (result == null)
+                return false;
 
             return Boolean.parseBoolean(result.getTextContent().trim());
         } catch (Exception e) {
@@ -652,11 +739,14 @@ public class CinemaServerService {
             this.reservationId = reservationId;
         }
 
-        public int getReservationId() { return reservationId; }
+        public int getReservationId() {
+            return reservationId;
+        }
     }
 
     private String escapeXml(String value) {
-        if (value == null) return "";
+        if (value == null)
+            return "";
         return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 .replace("\"", "&quot;").replace("'", "&apos;");
     }
@@ -677,11 +767,25 @@ public class CinemaServerService {
             this.errorMessage = errorMessage;
         }
 
-        public int getUserId() { return userId; }
-        public String getEmail() { return email; }
-        public String getUserName() { return userName; }
-        public String getErrorMessage() { return errorMessage; }
-        public boolean isSuccess() { return errorMessage == null || errorMessage.isBlank(); }
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public boolean isSuccess() {
+            return errorMessage == null || errorMessage.isBlank();
+        }
     }
 
     public static class RegisterResultDto {
@@ -699,12 +803,29 @@ public class CinemaServerService {
             this.errorMessage = errorMessage;
         }
 
-        public int getUserId() { return userId; }
-        public String getEmail() { return email; }
-        public String getName() { return name; }
-        public String getSurname() { return surname; }
-        public String getErrorMessage() { return errorMessage; }
-        public boolean isSuccess() { return errorMessage == null || errorMessage.isBlank(); }
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getSurname() {
+            return surname;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public boolean isSuccess() {
+            return errorMessage == null || errorMessage.isBlank();
+        }
     }
 
     public List<SeatDto> getSeats(int filmShowId) {
@@ -803,6 +924,39 @@ public class CinemaServerService {
 
         public boolean isTaken() {
             return isTaken;
+        }
+    }
+
+    public byte[] getReservationPdf(int reservationId) {
+        try {
+            String url = SERVER_URL + "/ReservationToPdf?reservationId=" + reservationId;
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+
+                String xml = response.body();
+
+                // 🔥 wyciągamy Base64 z XML
+                String base64 = xml
+                        .replaceAll("(?s).*<ReservationToPdfResult>", "")
+                        .replaceAll("</ReservationToPdfResult>.*", "");
+
+                return java.util.Base64.getDecoder().decode(base64);
+            }
+
+            throw new RuntimeException("PDF error: " + response.statusCode());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

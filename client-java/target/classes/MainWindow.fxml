@@ -94,7 +94,8 @@
                 </padding>
 
                 <HBox alignment="CENTER_LEFT" prefHeight="53.0" prefWidth="980.0">
-                    <Label fx:id="titleLabel" prefHeight="50.0" prefWidth="434.0" text="Diuna" textFill="WHITE">
+                    <Label fx:id="titleLabel" prefHeight="50.0" prefWidth="434.0" text="Diuna"
+                        textFill="WHITE">
                         <font>
                             <Font name="Franklin Gothic Book" size="25.0" />
                         </font>
@@ -134,7 +135,8 @@
                                 <Insets bottom="10.0" top="10.0" />
                             </padding>
                         </Separator>
-                        <Label fx:id="directorLabel" text="Reżyser: Denis Villeneuve" textFill="#aaa">
+                        <Label fx:id="directorLabel" text="Reżyser: Denis Villeneuve"
+                            textFill="#aaa">
                             <font>
                                 <Font name="Franklin Gothic Book" size="15.0" />
                             </font>
@@ -157,7 +159,8 @@
                         </Label>
                         <VBox alignment="CENTER" prefHeight="272.0" prefWidth="203.0"
                             style="-fx-border-color: #313131; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: #1a1a1a;">
-                            <ImageView fx:id="coverImage" fitHeight="222.0" fitWidth="184.0" pickOnBounds="true"
+                            <ImageView fx:id="coverImage" fitHeight="222.0" fitWidth="184.0"
+                                pickOnBounds="true"
                                 preserveRatio="true" />
                         </VBox>
                     </VBox>
@@ -168,7 +171,8 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <TextArea fx:id="actorsArea" editable="false" prefHeight="291.0" prefWidth="185.0"
+                        <TextArea fx:id="actorsArea" editable="false" prefHeight="291.0"
+                            prefWidth="185.0"
                             style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-font: normal 15px; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;"
                             wrapText="true" />
                     </VBox>
@@ -179,7 +183,8 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <TextArea fx:id="descriptionArea" editable="false" prefHeight="205.0" prefWidth="506.0"
+                        <TextArea fx:id="descriptionArea" editable="false" prefHeight="205.0"
+                            prefWidth="506.0"
                             style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-font: normal 15 px; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;"
                             wrapText="true" VBox.vgrow="ALWAYS" />
                     </VBox>
@@ -188,7 +193,8 @@
                 <HBox prefHeight="355.0" prefWidth="980.0" spacing="20" VBox.vgrow="ALWAYS">
                     <VBox prefHeight="350.0" prefWidth="674.0" spacing="10.0">
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Label fx:id="screenLabel" prefHeight="22.0" prefWidth="165.0" text="Plan Widowni: Sala ?"
+                            <Label fx:id="screenLabel" prefHeight="22.0" prefWidth="165.0"
+                                text="Plan Widowni: Sala ?"
                                 textFill="WHITE">
                                 <font>
                                     <Font name="Franklin Gothic Book" size="18.0" />
@@ -685,7 +691,8 @@
                                     <Font name="Franklin Gothic Book" size="14.0" />
                                 </font>
                             </Button>
-                            <Button maxWidth="Infinity" prefHeight="40"
+                            <Button fx:id="downloadPdfButton" maxWidth="Infinity" prefHeight="40"
+                                onAction="#handleDownloadPdf"
                                 style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;"
                                 text="Pobierz Potwierdzenie PDF" textFill="WHITE">
                                 <font>
@@ -708,7 +715,8 @@
                 style="-fx-background-color: #121212; -fx-border-color: #313131;"
                 BorderPane.alignment="CENTER">
                 <items>
-                    <Button contentDisplay="RIGHT" onAction="#handleLogout" prefHeight="28.0" prefWidth="75.0"
+                    <Button contentDisplay="RIGHT" onAction="#handleLogout" prefHeight="28.0"
+                        prefWidth="75.0"
                         style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;"
                         text="Wyloguj" textFill="WHITE">
                         <font>
@@ -732,7 +740,8 @@
                 style="-fx-background-color: #121212; -fx-border-color: #313131;"
                 BorderPane.alignment="CENTER">
                 <items>
-                    <Label fx:id="serverStatusLabel" text="Sprawdzanie połączenia..." textFill="#aaa">
+                    <Label fx:id="serverStatusLabel" text="Sprawdzanie połączenia..."
+                        textFill="#aaa">
                         <font>
                             <Font name="Franklin Gothic Book" size="10.0" />
                         </font>

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:nearest-crouch-liver.ngrok-free.dev)",
+      "Bash(mvn compile *)",
+      "Bash(java -version)",
+      "Read(//c/Users/Hackie/**)",
+      "Bash(xargs grep *)"
+    ]
+  }
+}
