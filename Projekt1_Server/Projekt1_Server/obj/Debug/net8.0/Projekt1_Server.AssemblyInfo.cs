@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: CoreWCF.EnableCoreWCFOperationInvokerGenerator(true)]
 [assembly: System.Reflection.AssemblyCompanyAttribute("Projekt1_Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad91e3bd92e1112bc074d1b2b98a05bf9a974753")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dccc59114026b55766bd6d0f93033f67813f156e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Projekt1_Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Projekt1_Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

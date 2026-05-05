@@ -156,6 +156,7 @@ public class CinemaService : ICinemaService
 		var reservation = _context.Reservations
 			.Include(r=>r.Seats)
 			.Include(r=>r.FilmShow)
+				.ThenInclude(fs=>fs.Movie)
 			.FirstOrDefault(r => r.ReservationId == reservationId && r.UsersId == userId);
 		if (reservation == null)
 		{
@@ -186,6 +187,7 @@ public class CinemaService : ICinemaService
 		return new ReservationUpdateDto
 		{
 			ReservationId = reservation.ReservationId,
+			MovieId = reservation.FilmShow.MovieId,
 			NewFilmShowId = newshowId,
 			NewSeats = newseats
 		};
@@ -196,6 +198,7 @@ public class CinemaService : ICinemaService
 		
 		var reservation = _context.Reservations
 			.Include(r => r.FilmShow)
+			.Include(r => r.Seats)
 			.FirstOrDefault(r => r.ReservationId == reservationId && r.UsersId == userId);
 		
 		if (reservation == null)
@@ -207,11 +210,32 @@ public class CinemaService : ICinemaService
 		{
 			throw new Exception("Nie można anulować rezerwacji na seans, który już się rozpoczął lub minął!");
 		}
-		
+		reservation.Seats.Clear();
 		_context.Reservations.Remove(reservation);
 		_context.SaveChanges();
 
 		return true;
+	}
+	
+	public List<ReservationDto> GetUserReservations(int userId)
+	{
+		var reservations = _context.Reservations
+			.Include(r => r.Seats)
+			.Include(r => r.FilmShow)
+				.ThenInclude(fs => fs.Movie)
+			.Where(r => r.UsersId == userId)
+			.ToList();
+
+		return reservations.Select(reservation => new ReservationDto
+		{
+			ReservationId = reservation.ReservationId,
+			Title = reservation.FilmShow.Movie.Title,
+			ShowDatetime = reservation.FilmShow.ShowDatetime,
+			FilmShowId = reservation.FilmShowId,
+			TakenSeats = reservation.Seats
+				.Select(s => $"Rząd {s.RowNum}, Miejsce {s.Number}")
+				.ToList()
+		}).ToList();
 	}
 	
 	private byte[] GenerateReservationPdf(ReservationPDFDto details)
@@ -302,98 +326,98 @@ public class CinemaService : ICinemaService
 	}
 
 	public RegisterDto Register(string name, string surname, string email, string password, string confirmPassword)
-{
-    try
-    {
-        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname) || 
-            string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || 
-            string.IsNullOrWhiteSpace(confirmPassword))
-        {
-            return new RegisterDto { UserId = -1, ErrorMessage = "Wszystkie pola są wymagane. Uzupełnij brakujące dane!" };
-        }
-        
-        if (password != confirmPassword)
-        {
-           return new RegisterDto { UserId = -1, ErrorMessage = "Podane hasła nie są identyczne!" };
-        }
-        
-        var existingUser = _context.Users.FirstOrDefault(u => u.Email == email);
-        if (existingUser != null)
-        {
-           return new RegisterDto { UserId = -1, ErrorMessage = "Konto z tym adresem email już istnieje!" };
-        }
-        
-        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-        
-        var newUser = new User 
-        {
-           Name = name,
-           Surname = surname,
-           Email = email,
-           Password = hashedPassword 
-        };
-        
-        _context.Users.Add(newUser);
-        _context.SaveChanges();
-        
-        return new RegisterDto
-        {
-           UserId = newUser.UsersId, 
-           Name = newUser.Name,
-           Surname = newUser.Surname,
-           Email = newUser.Email,
-           ErrorMessage = null 
-        };
-    }
-    catch (Exception ex)
-    {
-        return new RegisterDto
-        {
-            UserId = -1,
-            ErrorMessage = "REGISTER ERROR: " + ex.Message
-        };
-    }
-}
+	{
+	    try
+	    {
+	        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname) || 
+	            string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || 
+	            string.IsNullOrWhiteSpace(confirmPassword))
+	        {
+	            return new RegisterDto { UserId = -1, ErrorMessage = "Wszystkie pola są wymagane. Uzupełnij brakujące dane!" };
+	        }
+	        
+	        if (password != confirmPassword)
+	        {
+	           return new RegisterDto { UserId = -1, ErrorMessage = "Podane hasła nie są identyczne!" };
+	        }
+	        
+	        var existingUser = _context.Users.FirstOrDefault(u => u.Email == email);
+	        if (existingUser != null)
+	        {
+	           return new RegisterDto { UserId = -1, ErrorMessage = "Konto z tym adresem email już istnieje!" };
+	        }
+	        
+	        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+	        
+	        var newUser = new User 
+	        {
+	           Name = name,
+	           Surname = surname,
+	           Email = email,
+	           Password = hashedPassword 
+	        };
+	        
+	        _context.Users.Add(newUser);
+	        _context.SaveChanges();
+	        
+	        return new RegisterDto
+	        {
+	           UserId = newUser.UsersId, 
+	           Name = newUser.Name,
+	           Surname = newUser.Surname,
+	           Email = newUser.Email,
+	           ErrorMessage = null 
+	        };
+	    }
+	    catch (Exception ex)
+	    {
+	        return new RegisterDto
+	        {
+	            UserId = -1,
+	            ErrorMessage = "REGISTER ERROR: " + ex.Message
+	        };
+	    }
+	}
 
-public UserLoginDto Login(string email, string password)
-{
-    try
-    {
-        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-        {
-            return new UserLoginDto { ErrorMessage = "Email i hasło są wymagane!" };
-        }
+	public UserLoginDto Login(string email, string password)
+	{
+	    try
+	    {
+	        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+	        {
+	            return new UserLoginDto { ErrorMessage = "Email i hasło są wymagane!" };
+	        }
 
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
-        
-        if (user == null)
-        {
-           return new UserLoginDto { ErrorMessage = "Nieprawidłowy adres email lub hasło." };
-        }
-        
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password); 
+	        var user = _context.Users.FirstOrDefault(u => u.Email == email);
+	        
+	        if (user == null)
+	        {
+	           return new UserLoginDto { ErrorMessage = "Nieprawidłowy adres email lub hasło." };
+	        }
+	        
+	        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password); 
 
-        if (!isPasswordValid)
-        {
-           return new UserLoginDto { ErrorMessage = "Nieprawidłowy adres email lub hasło." };
-        }
-        
-        return new UserLoginDto
-        { 
-	        UserId = user.UsersId,
-           Email = user.Email,
-           UserName = user.Name,
-           ErrorMessage = null 
-        };
-    }
-    catch (Exception ex)
-    {
-        return new UserLoginDto
-        {
-            ErrorMessage = "LOGIN ERROR: " + ex.Message
-        };
-    }
-}
+	        if (!isPasswordValid)
+	        {
+	           return new UserLoginDto { ErrorMessage = "Nieprawidłowy adres email lub hasło." };
+	        }
+	        
+	        return new UserLoginDto
+	        { 
+		        UserId = user.UsersId,
+	           Email = user.Email,
+	           UserName = user.Name,
+	           ErrorMessage = null 
+	        };
+	    }
+	    catch (Exception ex)
+	    {
+	        return new UserLoginDto
+	        {
+	            ErrorMessage = "LOGIN ERROR: " + ex.Message
+	        };
+	    }
+	}
 	
 	public byte[] GetMoviePoster(int movieId)
 	{

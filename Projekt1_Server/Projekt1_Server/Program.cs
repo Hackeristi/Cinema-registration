@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Projekt1_Server;
 using Projekt1_Server.Models;
 using SoapCore;
+using System.ServiceModel;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

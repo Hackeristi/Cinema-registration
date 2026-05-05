@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using Projekt1_Server.DTOs;
 
 namespace Projekt1_Server;
@@ -30,6 +29,9 @@ public interface ICinemaService
 
     [OperationContract]
     bool ReservationDelete(int  userId, int reservationId);
+    
+    [OperationContract]
+    List<ReservationDto> GetUserReservations(int userId);
 
     [OperationContract]
     byte[] ReservationToPdf(int reservationId);
@@ -42,5 +44,4 @@ public interface ICinemaService
 
     [OperationContract]
     byte[] GetMoviePoster(int movieId);
-
 }

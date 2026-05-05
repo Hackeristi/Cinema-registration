@@ -55,6 +55,14 @@
               "target": "Package",
               "version": "[4.1.0, )"
             },
+            "CoreWCF.Http": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "CoreWCF.Primitives": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.25, )"
