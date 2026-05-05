@@ -1,5 +1,6 @@
 package pl.rsi.cinema;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -19,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pl.rsi.cinema.CinemaServerService.MovieDetails;
+import pl.rsi.cinema.CinemaServerService.ReservationCreateResultDto;
 import pl.rsi.cinema.dto.MovieFromServer;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,10 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BookingController {
-
-    // Auth overlay fields
     @FXML
     private VBox authOverlay;
     @FXML
@@ -48,6 +50,8 @@ public class BookingController {
     @FXML
     private TextField registerName;
     @FXML
+    private TextField registerSurname;
+    @FXML
     private TextField registerEmail;
     @FXML
     private PasswordField registerPassword;
@@ -59,19 +63,19 @@ public class BookingController {
     private TableColumn<MovieFromServer, String> genreCol;
     @FXML
     private TableColumn<MovieFromServer, String> dateCol;
-    // Booking fields
-
+    private int editingReservationId = -1;
     @FXML
     private VBox seatsListContainer;
     @FXML
-    private VBox seatsListContainer1;
+    private VBox ReservationsContainer;
     @FXML
     private HBox timeButtonsContainer;
     @FXML
     private GridPane seatGrid;
     @FXML
     private ComboBox<String> MovieDate;
-
+    @FXML
+    private Button downloadPdfButton;
     @FXML
     private Label titleLabel;
 
@@ -100,6 +104,7 @@ public class BookingController {
     @FXML
     private Label serverStatusLabel;
     @FXML
+    private Set<String> editingSeatKeys = new HashSet<>();
     private Label mtomStatusLabel;
     private Button currentSelectedTimeButton = null;
     private String selectedTime = "";
@@ -109,16 +114,30 @@ public class BookingController {
     private List<MovieFromServer> movies;
     @FXML
     private TableView<MovieFromServer> moviesTable;
-    private final Map<String, Set<String>> occupancyMap = new HashMap<>();
     private int currentFilmShowId = -1;
+    private final Map<String, Integer> seatIdMap = new HashMap<>();
+    private final Map<Integer, MovieFromServer> filmShowToMovieMap = new HashMap<>();
+    private String editingShowDatetime = "";
+    private MovieFromServer activeMovie;
+    private boolean editMode = false;
+    @FXML
+    private Button confirmReservationButton;
+    String editStyle = "-fx-background-color: #0078D7;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 10;" +
+            "-fx-background-radius: 4;";
+
+    String deleteStyle = "-fx-background-color: #ff4444;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 10;" +
+            "-fx-background-radius: 4;";
+    String disabledStyle = "-fx-background-color: #555555;" +
+            "-fx-text-fill: #cccccc;" +
+            "-fx-font-size: 10;" +
+            "-fx-background-radius: 4;";
 
     @FXML
     public void initialize() {
-        // Sprawdźmy, która instancja się odpala
-        System.out.println("DEBUG: Init - loginForm: " + (loginForm != null));
-
-        System.out.println("INIT CALLED");
-        System.out.println("SHOWING OVERLAY TEST");
 
         new Thread(() -> {
             boolean reachable = serverService.isServerReachable();
@@ -133,24 +152,16 @@ public class BookingController {
         }).start();
 
         showAuthOverlay();
-        System.out.println("authOverlay = " + authOverlay);
-        System.out.println("loginForm = " + loginForm);
-        System.out.println("titleLabel = " + titleLabel);
-        System.out.println("seatGrid = " + seatGrid);
         loginForm.setVisible(true);
         loginForm.setManaged(true);
-
         registerForm.setVisible(false);
         registerForm.setManaged(false);
         if (seatGrid != null) {
             seatController.setBookingController(this);
             seatController.initSeatMap(seatGrid);
-
             try {
                 movies = serverService.getMovies();
-
                 if (movies != null && !movies.isEmpty()) {
-
                     Set<String> uniqueDates = new HashSet<>();
                     for (var movie : movies) {
                         String dateTime = movie.getShowDateTime();
@@ -159,58 +170,47 @@ public class BookingController {
                             uniqueDates.add(date);
                         }
                     }
-
                     MovieDate.getItems().addAll(uniqueDates.stream().sorted().toList());
-
                 } else {
                     MovieDate.getItems().addAll("27.04.2024", "28.04.2024", "29.04.2024");
                 }
-
             } catch (Exception e) {
-                System.out.println("Błąd: " + e.getMessage());
                 MovieDate.getItems().addAll("27.04.2024", "28.04.2024", "29.04.2024");
             }
-
             if (!MovieDate.getItems().isEmpty()) {
                 MovieDate.getSelectionModel().selectFirst();
             }
-
-            // 🔥 DOPIERO TERAZ:
             setupMovies();
             loadMovies();
+            moviesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldMovie, newMovie) -> {
+                if (newMovie != null) {
+                    updatePdfButtonState();
+                    showMovieDetails(newMovie);
+                    String movieDate = extractDateString(newMovie.getShowDateTime());
+                    boolean dateChanged = false;
+                    if (MovieDate.getItems().contains(movieDate) && !movieDate.equals(MovieDate.getValue())) {
+                        MovieDate.getSelectionModel().select(movieDate);
+                        dateChanged = true;
+                    }
+                    if (!dateChanged) {
+                        updateAvailableTimes(newMovie);
+                    }
+                    if (editMode) {
+                        exitEditMode();
+                        return;
+                    }
 
-            moviesTable.getSelectionModel().selectedItemProperty().addListener(
-                    (obs, oldMovie, newMovie) -> {
+                }
 
-                        if (newMovie != null) {
-
-                            showMovieDetails(newMovie);
-
-                            String movieDate = extractDateString(newMovie.getShowDateTime());
-                            boolean dateChanged = false;
-
-                            if (MovieDate.getItems().contains(movieDate) && !movieDate.equals(MovieDate.getValue())) {
-                                MovieDate.getSelectionModel().select(movieDate);
-                                dateChanged = true;
-                            }
-
-                            if (!dateChanged) {
-                                updateAvailableTimes(newMovie);
-                            }
-                        }
-                    });
-
-            MovieDate.getSelectionModel().selectedItemProperty().addListener(
-                    (obs, oldDate, newDate) -> {
-                        MovieFromServer selectedMovie = moviesTable.getSelectionModel().getSelectedItem();
-                        if (selectedMovie != null && newDate != null) {
-                            updateAvailableTimes(selectedMovie);
-                        }
-                    });
-        } else {
-            System.out.println("ERROR: seatGrid is null!");
+            });
+            MovieDate.getSelectionModel().selectedItemProperty().addListener((obs, oldDate, newDate) -> {
+                updatePdfButtonState();
+                MovieFromServer selectedMovie = moviesTable.getSelectionModel().getSelectedItem();
+                if (selectedMovie != null && newDate != null) {
+                    updateAvailableTimes(selectedMovie);
+                }
+            });
         }
-        System.out.println("HIDE INSTANCE = " + System.identityHashCode(this));
     }
 
     private void showMovieDetails(MovieFromServer movie) {
@@ -249,20 +249,14 @@ public class BookingController {
 
     private void updateAvailableTimes(MovieFromServer movie) {
 
-        System.out.println("=== UPDATE TIMES ===");
-
         currentSelectedTimeButton = null;
         timeButtonsContainer.getChildren().clear();
 
         String date = MovieDate.getValue();
-        System.out.println("<date>" + date + "</date>");
-
         if (date == null)
             return;
 
         List<CinemaServerService.ShowtimeDto> showtimes = serverService.getShowtimes(movie.getMovieId(), date);
-
-        System.out.println("SHOWTIMES = " + (showtimes == null ? "null" : showtimes.size()));
 
         if (showtimes == null || showtimes.isEmpty()) {
             System.out.println("NO SHOWTIMES FROM SERVER");
@@ -271,9 +265,10 @@ public class BookingController {
 
         Button firstBtn = null;
         for (CinemaServerService.ShowtimeDto s : showtimes) {
-
-            System.out.println("ADDING BTN: " + s.getShowDatetime());
-
+            if (movie == null && activeMovie != null) {
+                movie = activeMovie;
+            }
+            filmShowToMovieMap.put(s.getFilmShowId(), movie);
             Button btn = new Button(s.getShowDatetime().split("T")[1].substring(0, 5));
             btn.setPrefWidth(70);
             btn.setStyle("-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5;");
@@ -283,10 +278,12 @@ public class BookingController {
             btn.setOnAction(this::handleTimeSelection);
 
             timeButtonsContainer.getChildren().add(btn);
-            if (firstBtn == null) firstBtn = btn;
+            if (firstBtn == null)
+                firstBtn = btn;
         }
 
-        if (firstBtn != null) firstBtn.fire();
+        if (firstBtn != null)
+            firstBtn.fire();
     }
 
     private void setupMovies() {
@@ -306,25 +303,18 @@ public class BookingController {
 
         Set<String> seen = new HashSet<>();
         List<MovieFromServer> result = new ArrayList<>();
-
         LocalDate today = LocalDate.now();
         LocalDate end = today.plusDays(7);
-
         for (MovieFromServer m : list) {
-
             LocalDate date = extractDate(m);
-
             if (date.isBefore(today) || date.isAfter(end)) {
                 continue;
             }
-
             String key = m.getTitle() + "_" + date;
-
             if (seen.add(key)) {
                 result.add(m);
             }
         }
-
         result.sort(Comparator.comparing(this::extractDate));
         return result;
     }
@@ -389,6 +379,132 @@ public class BookingController {
                 FXCollections.observableArrayList(filtered));
     }
 
+    private boolean isPast(String datetime) {
+        try {
+            if (datetime == null || datetime.isBlank())
+                return false;
+
+            // 🔥 normalizacja formatu z .NET
+            datetime = datetime.replace("Z", ""); // usuń Z (UTC)
+            datetime = datetime.split("\\.")[0]; // usuń milisekundy
+            datetime = datetime.replace(" ", "T"); // jeśli jest spacja
+
+            LocalDateTime showTime = LocalDateTime.parse(datetime);
+
+            System.out.println("CHECK: " + showTime + " NOW: " + LocalDateTime.now());
+
+            return showTime.isBefore(LocalDateTime.now());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String extractTime(String dateTime) {
+        if (dateTime == null || dateTime.isEmpty()) {
+            return "";
+        }
+
+        try {
+            if (dateTime.contains("T")) {
+                // формат: 2025-06-17T18:00:00
+                return dateTime.split("T")[1].substring(0, 5);
+            } else {
+                // формат: 2025-06-17 18:00:00
+                return dateTime.split(" ")[1].substring(0, 5);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private void loadReservations() {
+        User currentUser = UserService.getInstance().getCurrentUser();
+        if (currentUser == null)
+            return;
+
+        List<CinemaServerService.UserReservationDto> reservations = serverService
+                .getUserReservations(currentUser.getUserId());
+
+        ReservationsContainer.getChildren().clear();
+
+        for (var r : reservations) {
+
+            VBox reservationBox = new VBox(5);
+            reservationBox.setStyle(
+                    "-fx-border-color: #313131; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #1a1a1a;");
+
+            Label infoLabel = new Label(r.getTitle() + " | " + r.getShowDatetime());
+            infoLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+            String seatsText = r.getSeats();
+            StringBuilder seatsSummary = new StringBuilder();
+
+            if (seatsText != null && !seatsText.isEmpty()) {
+
+                String[] parts = seatsText.split(",");
+
+                for (int i = 0; i < parts.length - 1; i += 2) {
+                    try {
+                        String rowPart = parts[i].trim(); // "Rząd 6"
+                        String seatPart = parts[i + 1].trim(); // "Miejsce 6"
+
+                        int row = Integer.parseInt(rowPart.split(" ")[1]);
+                        int col = Integer.parseInt(seatPart.split(" ")[1]);
+
+                        char rowLetter = (char) ('A' + row - 1);
+
+                        if (seatsSummary.length() > 0)
+                            seatsSummary.append(", ");
+
+                        seatsSummary.append(rowLetter).append(col);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            Label seats = new Label("Miejsca: " + seatsSummary);
+            seats.setStyle("-fx-text-fill: #aaa; -fx-font-size: 11;");
+            Button editBtn = new Button("Edytuj");
+            Button deleteBtn = new Button("Usuń");
+            editBtn.setStyle(editStyle);
+            deleteBtn.setStyle(deleteStyle);
+            HBox buttons = new HBox(10, editBtn, deleteBtn);
+            buttons.setAlignment(Pos.CENTER);
+            buttons.setPrefWidth(Double.MAX_VALUE);
+            editBtn.setMaxWidth(Double.MAX_VALUE);
+            deleteBtn.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(editBtn, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(deleteBtn, javafx.scene.layout.Priority.ALWAYS);
+            reservationBox.getChildren().addAll(infoLabel, seats, buttons);
+            int reservationId = r.getReservationId();
+            deleteBtn.setOnAction(e -> handleDeleteReservation(reservationId, reservationBox));
+            if (isPast(r.getShowDatetime())) {
+                deleteBtn.setDisable(true);
+                deleteBtn.setStyle(disabledStyle);
+            }
+            Set<String> seatKeys = parseSeatsToKeys(r.getSeats());
+
+            editBtn.setOnAction(e -> enterEditMode(
+                    reservationId,
+                    r.getFilmShowId(),
+                    seatKeys,
+                    new ArrayList<>(),
+                    reservationBox,
+                    extractTime(r.getShowDatetime()),
+                    r.getShowDatetime(),
+                    null));
+            if (isPast(r.getShowDatetime())) {
+                editBtn.setDisable(true);
+                editBtn.setStyle(disabledStyle);
+            }
+            ReservationsContainer.getChildren().add(reservationBox);
+        }
+    }
+
     private void showAuthOverlay() {
         authOverlay.setDisable(false);
         authOverlay.setVisible(true);
@@ -425,49 +541,77 @@ public class BookingController {
         String email = loginEmail.getText();
         String password = loginPassword.getText();
 
-        // Wywołujemy statyczną metodę z klasy pomocniczej
         String error = LoginController.validateLogin(email, password);
         if (error != null) {
             showAlert("Błąd", error);
             return;
         }
 
-        if (LoginController.performLogin(email, password)) {
-            hideAuthOverlay(); // TO sprawi, że nakładka zniknie i zobaczysz kino!
+        CinemaServerService.UserLoginDto result = serverService.login(email, password);
+        if (result != null && result.isSuccess()) {
+            UserService.getInstance().setCurrentUser(
+                    new User(result.getUserId(), result.getEmail(), result.getUserName()));
+            hideAuthOverlay();
+            loadReservations();
+            updatePdfButtonState();
+
+            if (moviesTable != null &&
+                    moviesTable.getItems() != null &&
+                    !moviesTable.getItems().isEmpty()) {
+
+                MovieFromServer firstMovie = moviesTable.getItems().get(0);
+
+                moviesTable.getSelectionModel().select(firstMovie);
+
+                showMovieDetails(firstMovie);
+                updateAvailableTimes(firstMovie);
+            }
         } else {
-            System.out.println("EMAIL FIELD: " + loginEmail);
-            System.out.println("EMAIL TEXT: " + (loginEmail != null ? loginEmail.getText() : "NULL"));
-            showAlert("Błąd", "Nieprawidłowe dane logowania");
+            String errMsg = (result != null && result.getErrorMessage() != null && !result.getErrorMessage().isBlank())
+                    ? result.getErrorMessage()
+                    : "Nieprawidłowe dane logowania";
+            showAlert("Błąd logowania", errMsg);
         }
-        System.out.println("VISIBLE: " + authOverlay.isVisible());
-        System.out.println("MANAGED: " + authOverlay.isManaged());
-        System.out.println("MOUSE: " + authOverlay.isMouseTransparent());
-        System.out.println("authOverlay parent = " + authOverlay.getParent());
-        System.out.println("Kliknięto logowanie!");
     }
 
     @FXML
     public void handleRegister() {
         String name = registerName.getText();
+        String surname = registerSurname != null ? registerSurname.getText() : "";
         String email = registerEmail.getText();
         String pass = registerPassword.getText();
         String confirm = registerConfirmPassword.getText();
 
-        String error = RegisterController.validateRegister(name, email, pass, confirm);
+        String error = RegisterController.validateRegister(name, surname, email, pass, confirm);
         if (error != null) {
             showAlert("Błąd", error);
             return;
         }
 
-        if (RegisterController.performRegister(email, pass, name)) {
-            showAlert("Sukces", "Zarejestrowano! Możesz się zalogować.");
-            showLoginForm();
+        CinemaServerService.RegisterResultDto result = serverService.register(name, surname, email, pass, confirm);
+        if (result != null && result.isSuccess()) {
+            UserService.getInstance().setCurrentUser(
+                    new User(result.getUserId(), result.getEmail(),
+                            (result.getName() != null ? result.getName() : name) + " " +
+                                    (result.getSurname() != null ? result.getSurname() : surname)));
+            hideAuthOverlay();
+        } else {
+            String errMsg = (result != null && result.getErrorMessage() != null && !result.getErrorMessage().isBlank())
+                    ? result.getErrorMessage()
+                    : "Błąd rejestracji. Sprawdź dane i spróbuj ponownie.";
+            showAlert("Błąd rejestracji", errMsg);
         }
     }
 
+    @FXML
+    public void handleLogout() {
+        UserService.getInstance().logout();
+        loginEmail.clear();
+        loginPassword.clear();
+        showLoginForm();
+    }
+
     private void hideAuthOverlay() {
-        System.out.println("HIDE INSTANCE = " + System.identityHashCode(this));
-        System.out.println("OVERLAY = " + authOverlay);
         authOverlay.setVisible(false);
         authOverlay.setManaged(false);
         authOverlay.setMouseTransparent(true);
@@ -507,18 +651,42 @@ public class BookingController {
             int sid = showtime.getScreenId();
             screenLabel.setText("Plan Widowni: Sala " + (sid > 0 ? sid : "?"));
         }
-
+        activeMovie = filmShowToMovieMap.get(showtime.getFilmShowId());
+        updatePdfButtonState();
         refreshOccupancy();
+    }
+
+    private Set<String> parseSeatsToKeys(String seatsText) {
+        Set<String> result = new HashSet<>();
+
+        if (seatsText == null || seatsText.isEmpty())
+            return result;
+
+        String[] parts = seatsText.split(",");
+
+        for (int i = 0; i < parts.length - 1; i += 2) {
+            try {
+                int row = Integer.parseInt(parts[i].trim().split(" ")[1]);
+                int col = Integer.parseInt(parts[i + 1].trim().split(" ")[1]);
+
+                result.add(row + "," + col);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 
     private void refreshOccupancy() {
 
+        if (currentFilmShowId == -1)
+            return;
+
         seatController.resetAllSeatsToFree();
         seatsListContainer.getChildren().clear();
         selectedSeatKeys.clear();
-
-        if (currentFilmShowId == -1)
-            return;
+        seatIdMap.clear();
 
         List<CinemaServerService.SeatDto> seats = serverService.getSeats(currentFilmShowId);
 
@@ -530,8 +698,9 @@ public class BookingController {
         for (CinemaServerService.SeatDto s : seats) {
 
             String key = s.getRowNum() + "," + s.getNumber();
+            seatIdMap.put(key, s.getSeatId());
 
-            if (s.isTaken()) {
+            if (s.isTaken() && !editingSeatKeys.contains(key)) {
                 occupied.add(key);
             }
         }
@@ -541,48 +710,292 @@ public class BookingController {
 
     @FXML
     private void handleConfirmReservation(ActionEvent event) {
-        String currentDate = MovieDate.getValue();
-        if (selectedSeatKeys.isEmpty() || selectedTime.isEmpty() || currentDate == null)
+        User currentUser = UserService.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert("Błąd", "Musisz być zalogowany, aby dokonać rezerwacji.");
             return;
-
-        // 1. Zapisujemy do mapy pod kluczem łączonym "Data_Godzina"
-        String sessionKey = currentDate + "_" + selectedTime;
-        occupancyMap.computeIfAbsent(sessionKey, k -> new HashSet<>()).addAll(selectedSeatKeys);
-
-        // 2. Dodajemy wpis do lewego panelu (Potwierdzone)
-        VBox reservationBox = new VBox(5);
-        reservationBox.setStyle(
-                "-fx-border-color: #313131; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #1a1a1a;");
-
-        Label infoLabel = new Label("Diuna | " + currentDate + " | Godz: " + selectedTime);
-        infoLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-
-        StringBuilder seatsSummary = new StringBuilder();
-        for (String key : selectedSeatKeys) {
-            String[] parts = key.split(",");
-            char rowLetter = (char) ('A' + Integer.parseInt(parts[0]) - 1);
-            if (seatsSummary.length() > 0)
-                seatsSummary.append(", ");
-            seatsSummary.append(rowLetter).append(parts[1]);
         }
 
-        Label seatsLabel = new Label("Miejsca: " + seatsSummary.toString());
-        seatsLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 11;");
+        String currentDate = MovieDate.getValue();
+        if (selectedSeatKeys.isEmpty() || selectedTime.isEmpty() || currentDate == null || currentFilmShowId == -1)
+            return;
 
-        reservationBox.getChildren().addAll(infoLabel, seatsLabel);
-        seatsListContainer1.getChildren().add(reservationBox);
+        List<Integer> seatIds = new ArrayList<>();
+        for (String key : selectedSeatKeys) {
+            Integer seatId = seatIdMap.get(key);
+            if (seatId != null)
+                seatIds.add(seatId);
+        }
 
-        // 3. Resetujemy wybór (ale zostawiamy datę zaznaczoną)
-        seatController.markSelectedAsOccupied(selectedSeatKeys);
-        seatsListContainer.getChildren().clear();
-        selectedSeatKeys.clear();
-        resetButtonToDefault(currentSelectedTimeButton);
-        selectedTime = "";
-        refreshOccupancy();
+        if (seatIds.isEmpty()) {
+            showAlert("Błąd", "Nie można ustalić identyfikatorów miejsc. Odśwież siedzenia.");
+            return;
+        }
+
+        // --- LOGIC CHANGE START ---
+        int reservationId = -1;
+
+        if (editingReservationId != -1) {
+            // EDIT MODE
+            boolean ok = serverService.updateReservation(
+                    currentUser.getUserId(),
+                    editingReservationId,
+                    currentFilmShowId,
+                    seatIds);
+
+            if (!ok) {
+                showAlert("Błąd", "Nie udało się zaktualizować rezerwacji.");
+                return;
+            }
+
+            reservationId = editingReservationId; // Keep the same ID
+
+            loadReservations();
+            exitEditMode();
+            return;
+        } else {
+            CinemaServerService service = new CinemaServerService();
+            ReservationCreateResultDto result = service.createReservation(
+                    currentUser.getUserId(),
+                    currentFilmShowId,
+                    seatIds);
+
+            if (result != null && result.getReservationId() > 0) {
+                // Reservation was successfully created
+                reservationId = result.getReservationId();
+
+                // Mark the reserved seats as occupied and highlight them in red
+                Set<String> reservedSeats = result.getSeatKeys() != null ? new HashSet<>(result.getSeatKeys()) : null;
+                if (reservedSeats != null) {
+                    seatController.markOccupiedOnGrid(reservedSeats);
+                }
+
+                // Perform additional actions here
+            } else {
+                // Reservation creation failed
+                showAlert("Błąd", "Nie udało się utworzyć rezerwacji.");
+                return;
+            }
+            // --- LOGIC CHANGE END ---
+
+            final int finalReservationId = reservationId; // Effectively final for lambdas
+            final int filmShowId = currentFilmShowId;
+            final String capturedTime = selectedTime;
+            final Set<String> capturedSeatKeys = new HashSet<>(selectedSeatKeys);
+            final List<Integer> capturedSeatIds = new ArrayList<>(seatIds);
+
+            MovieFromServer selectedMovie = activeMovie;
+            String movieTitle = (selectedMovie != null) ? selectedMovie.getTitle()
+                    : (titleLabel != null ? titleLabel.getText() : "Film");
+
+            StringBuilder seatsSummary = new StringBuilder();
+            for (String key : selectedSeatKeys) {
+                String[] parts = key.split(",");
+                char rowLetter = (char) ('A' + Integer.parseInt(parts[0]) - 1);
+                if (seatsSummary.length() > 0)
+                    seatsSummary.append(", ");
+                seatsSummary.append(rowLetter).append(parts[1]);
+            }
+
+            VBox reservationBox = new VBox(5);
+            reservationBox.setStyle(
+                    "-fx-border-color: #313131; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #1a1a1a;");
+
+            Label infoLabel = new Label(movieTitle + " | " + currentDate + " | Godz: " + selectedTime);
+            infoLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+            Label seatsLabel = new Label("Miejsca: " + seatsSummary);
+            seatsLabel.setStyle("-fx-text-fill: #aaa; -fx-font-size: 11;");
+
+            Button editBtn = new Button("Edytuj");
+            editBtn.setStyle(
+                    "-fx-background-color: #0078D7; -fx-text-fill: white; -fx-font-size: 10; -fx-background-radius: 4;");
+
+            Button deleteBtn = new Button("Usuń");
+            deleteBtn.setStyle(
+                    "-fx-background-color: #ff4444; -fx-text-fill: white; -fx-font-size: 10; -fx-background-radius: 4;");
+
+            HBox buttons = new HBox(10, editBtn, deleteBtn);
+            buttons.setAlignment(Pos.CENTER);
+            buttons.setPrefWidth(Double.MAX_VALUE);
+            editBtn.setMaxWidth(Double.MAX_VALUE);
+            deleteBtn.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(editBtn, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(deleteBtn, javafx.scene.layout.Priority.ALWAYS);
+
+            reservationBox.getChildren().addAll(infoLabel, seatsLabel, buttons);
+
+            // Use finalReservationId here
+            deleteBtn.setOnAction(e -> handleDeleteReservation(finalReservationId, reservationBox));
+
+            String fullDateTime = currentDate + "T" + capturedTime + ":00";
+            editBtn.setOnAction(e -> enterEditMode(
+                    finalReservationId,
+                    filmShowId,
+                    capturedSeatKeys,
+                    capturedSeatIds,
+                    reservationBox,
+                    capturedTime,
+                    fullDateTime,
+                    selectedMovie));
+
+            ReservationsContainer.getChildren().add(reservationBox);
+
+            seatController.markSelectedAsOccupied(selectedSeatKeys);
+            seatsListContainer.getChildren().clear();
+            selectedSeatKeys.clear();
+            editingSeatKeys.clear();
+            resetButtonToDefault(currentSelectedTimeButton);
+            selectedTime = "";
+            refreshOccupancy();
+        }
     }
 
-    // Pozostałe metody pomocnicze (addSeatToList, removeSeatFromList,
-    // handleSeatClick, resetButtonToDefault) pozostają bez zmian...
+    private void exitEditMode() {
+        editMode = false;
+        editingReservationId = -1;
+
+        Platform.runLater(() -> {
+            confirmReservationButton.setText("Potwierdź rezerwację");
+        });
+
+        selectedSeatKeys.clear();
+        editingSeatKeys.clear();
+        seatsListContainer.getChildren().clear();
+    }
+
+    @FXML
+    private void handleDeletePastReservations(ActionEvent event) {
+
+        ReservationsContainer.getChildren().removeIf(node -> {
+
+            if (!(node instanceof VBox box))
+                return false;
+
+            try {
+                Label label = (Label) box.getChildren().get(0);
+                String text = label.getText();
+
+                // "Film | 2026-05-04 | Godz: 18:00"
+                String[] parts = text.split("\\|");
+                if (parts.length < 2)
+                    return false;
+
+                String dateStr = parts[1].trim();
+                LocalDate date = parseDateFlexible(dateStr);
+                if (date == null)
+                    return false;
+
+                return date.isBefore(LocalDate.now());
+            } catch (Exception e) {
+                return false;
+            }
+        });
+    }
+
+    private LocalDate parseDateFlexible(String dateStr) {
+        try {
+            return LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (Exception ignored) {
+        }
+
+        try {
+            return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception ignored) {
+        }
+
+        return null;
+    }
+
+    private void handleDeleteReservation(int reservationId, VBox box) {
+        User currentUser = UserService.getInstance().getCurrentUser();
+        if (currentUser == null)
+            return;
+
+        try {
+            boolean ok = serverService.deleteReservation(currentUser.getUserId(), reservationId);
+
+            if (ok) {
+                // Remove the reservation from the UI
+                ReservationsContainer.getChildren().remove(box);
+                refreshOccupancy();
+            } else {
+                showAlert("Błąd", "Nie udało się usunąć rezerwacji.");
+            }
+
+        } catch (RuntimeException e) {
+            // 🔥 TU ŁAPIEMY SOAP 500
+            String msg = e.getMessage();
+
+            if (msg != null && msg.contains("Nie można anulować")) {
+                showAlert("Brak możliwości", "Nie można usunąć rezerwacji po rozpoczęciu seansu.");
+            } else {
+                showAlert("Błąd", "Błąd serwera: " + msg);
+            }
+        }
+    }
+
+    private void enterEditMode(int reservationId,
+            int filmShowId,
+            Set<String> seatKeys,
+            List<Integer> seatIds,
+            VBox box,
+            String time,
+            String showDatetime,
+            MovieFromServer movie) {
+
+        System.out.println("EDIT CLICK:");
+        System.out.println("Datetime: " + showDatetime);
+
+        if (isPast(showDatetime)) {
+            showAlert("Błąd", "Nie można edytować rezerwacji (seans minął)");
+            return;
+        }
+
+        this.editMode = true;
+        this.editingReservationId = reservationId;
+
+        // zmiana tekstu przycisku
+        Platform.runLater(() -> {
+            confirmReservationButton.setText("Zapisz zmiany");
+        });
+        this.currentFilmShowId = filmShowId;
+        this.selectedTime = time;
+        this.editingSeatKeys = new HashSet<>(seatKeys);
+
+        box.setOpacity(0.5);
+
+        // 🔥 KLUCZOWE: fallback jeśli movie == null
+        if (movie == null) {
+            movie = filmShowToMovieMap.get(filmShowId);
+        }
+
+        if (movie != null) {
+            activeMovie = movie;
+            showMovieDetails(movie);
+            updateAvailableTimes(movie);
+        } else {
+            System.out.println("❌ Nadal brak filmu dla showId: " + filmShowId);
+        }
+
+        selectedSeatKeys.clear();
+        seatsListContainer.getChildren().clear();
+
+        for (String key : seatKeys) {
+            String[] parts = key.split(",");
+            int row = Integer.parseInt(parts[0]);
+            int col = Integer.parseInt(parts[1]);
+
+            selectedSeatKeys.add(key);
+            seatController.preselectSeatColor(key);
+            addSeatToList(key, row, col);
+        }
+
+        refreshOccupancy();
+        for (String key : seatKeys) {
+            seatController.preselectSeatColor(key);
+        }
+    }
 
     @FXML
     private void handleSeatClick(ActionEvent event) {
@@ -607,16 +1020,75 @@ public class BookingController {
         rowBox.setUserData(seatKey);
         seatsListContainer.getChildren().add(rowBox);
         selectedSeatKeys.add(seatKey);
+        updatePdfButtonState();
+
     }
 
     public void removeSeatFromList(String seatKey) {
         selectedSeatKeys.remove(seatKey);
         seatsListContainer.getChildren().removeIf(node -> seatKey.equals(node.getUserData()));
+        updatePdfButtonState();
+
     }
 
     private void resetButtonToDefault(Button btn) {
         if (btn != null)
             btn.setStyle(
                     "-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5; -fx-text-fill: white; -fx-font-weight: normal;");
+    }
+
+    @FXML
+    private void handleDownloadPdf(ActionEvent event) {
+
+        User currentUser = UserService.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert("Błąd", "Musisz być zalogowany.");
+            return;
+        }
+
+        // jeśli masz zaznaczoną rezerwację / aktualną
+        if (editingReservationId == -1) {
+            showAlert("Błąd", "Wybierz rezerwację do pobrania PDF.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                byte[] pdf = serverService.getReservationPdf(editingReservationId);
+
+                System.out.println("PDF SIZE: " + pdf.length);
+                if (pdf == null || pdf.length == 0) {
+                    javafx.application.Platform.runLater(() -> showAlert("Błąd", "Nie udało się pobrać PDF"));
+                    return;
+                }
+
+                java.nio.file.Path path = java.nio.file.Paths.get(
+                        System.getProperty("user.home"),
+                        "Downloads",
+                        "bilet_" + editingReservationId + ".pdf");
+
+                java.nio.file.Files.write(path, pdf);
+
+                javafx.application.Platform.runLater(() -> showAlert("Sukces", "PDF zapisany: " + path));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> showAlert("Błąd", "Błąd pobierania PDF"));
+            }
+        }).start();
+    }
+
+    private boolean canReserve() {
+        return currentFilmShowId != -1
+                && !selectedSeatKeys.isEmpty()
+                && !selectedTime.isEmpty();
+    }
+
+    private void updatePdfButtonState() {
+        downloadPdfButton.setDisable(!canDownloadPdf());
+    }
+
+    private boolean canDownloadPdf() {
+        return canReserve();
     }
 }

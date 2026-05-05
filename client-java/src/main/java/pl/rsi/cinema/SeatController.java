@@ -113,4 +113,11 @@ public class SeatController {
             }
         }
     }
+
+    public void preselectSeatColor(String key) {
+        Button btn = seatButtonsMap.get(key);
+        if (btn != null) {
+            updateButtonColor(btn, COLOR_RESERVED);
+        }
+    }
 }

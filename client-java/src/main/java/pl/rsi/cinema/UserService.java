@@ -54,6 +54,10 @@ public class UserService {
         return currentUser;
     }
 
+    public void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
     public void logout() {
         currentUser = null;
     }

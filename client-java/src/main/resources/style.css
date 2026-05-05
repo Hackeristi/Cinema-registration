@@ -97,3 +97,15 @@
 .seat.selected {
     -fx-background-color: #FF0000;
 }
+
+String baseStyle =
+    "-fx-background-color: #0078D7;" +
+    "-fx-text-fill: white;" +
+    "-fx-font-size: 10;" +
+    "-fx-background-radius: 4;";
+    
+String disabledStyle =
+    "-fx-background-color: #555555;" +
+    "-fx-text-fill: #cccccc;" +
+    "-fx-font-size: 10;" +
+    "-fx-background-radius: 4;";
