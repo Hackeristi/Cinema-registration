@@ -150,48 +150,47 @@ public class CinemaService : ICinemaService
 			SelectedSeats = seats
 		};
 	}
-
+	
 	public ReservationUpdateDto UpdateReservation(int userId, int reservationId, int newshowId, List<int> newseats)
 	{
 		var reservation = _context.Reservations
-			.Include(r=>r.Seats)
-			.Include(r=>r.FilmShow)
-				.ThenInclude(fs=>fs.Movie)
+			.Include(r => r.Seats)
+			.Include(r => r.FilmShow)
 			.FirstOrDefault(r => r.ReservationId == reservationId && r.UsersId == userId);
-		if (reservation == null)
-		{
-			throw new Exception("Nie istnieje rezerwacja to takim id!");
-		}
 
+		if (reservation == null) throw new Exception("Nie istnieje rezerwacja o takim id!");
+		
 		if (DateTime.Now >= reservation.FilmShow.ShowDatetime)
 		{
-			throw new Exception("Nie można edytować rezerwacji na seans, który już się rozpoczął lub minął!");
+			throw new Exception("Nie można edytować rezerwacji na seans, który już się rozpoczął!");
 		}
+		
+		var newShow = _context.FilmShows
+			.Include(fs => fs.Movie)
+			.FirstOrDefault(fs => fs.FilmShowId == newshowId);
+        
+		if (newShow == null) throw new Exception("Wybrany nowy seans nie istnieje!");
 		
 		reservation.Seats.Clear();
+		var newSeatsList = _context.Seats.Where(s => newseats.Contains(s.SeatId)).ToList();
+		if (newSeatsList.Count == 0) throw new Exception("Wybrane nowe miejsca nie istnieją!");
 		
-		var newSeats = _context.Seats.Where(s => newseats.Contains(s.SeatId)).ToList();
-
-		if (newSeats.Count == 0)
-		{
-			throw new Exception("Wybrane nowe miejsca nie istnieją!");
-		}
-		
-		reservation.FilmShowId = newshowId;
-		reservation.Seats = newSeats;
+		reservation.FilmShow = newShow; 
+		reservation.Seats = newSeatsList;
 		reservation.Status = "Zmodyfikowana";
 		reservation.ReservationDate = DateTime.Now;
-		
+    
 		_context.SaveChanges();
-
+		
 		return new ReservationUpdateDto
 		{
 			ReservationId = reservation.ReservationId,
-			MovieId = reservation.FilmShow.MovieId,
+			MovieId = newShow.MovieId, 
 			NewFilmShowId = newshowId,
 			NewSeats = newseats
 		};
 	}
+	
 	
 	public bool ReservationDelete(int userId, int reservationId)
 	{
