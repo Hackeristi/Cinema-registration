@@ -25,6 +25,8 @@ public class UserService {
         users.put("test@example.com", new User("test@example.com", "test123", "Jan Kowalski"));
         users.put("user@cinema.com", new User("user@cinema.com", "password", "Anna Nowak"));
         users.put("admin@cinema.com", new User("admin@cinema.com", "admin123", "Admin Kino"));
+        users.put("a", new User("a.com", "a", "Admin Kino"));
+
     }
 
     public boolean login(String email, String password) {

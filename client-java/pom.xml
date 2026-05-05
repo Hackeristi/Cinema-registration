@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>pl.rsi.cinema</groupId>
@@ -7,6 +9,14 @@
   <version>1.0-SNAPSHOT</version>
   <name>client-java</name>
   <url>http://maven.apache.org</url>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <soap.server.url>http://localhost:5000</soap.server.url>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -29,8 +39,13 @@
       <artifactId>javafx-fxml</artifactId>
       <version>21</version>
     </dependency>
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <version>2.3.1</version>
+    </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -38,8 +53,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>21</source>
-          <target>21</target>
+          <source>17</source>
+          <target>17</target>
         </configuration>
       </plugin>
       <plugin>
@@ -50,6 +65,15 @@
           <mainClass>pl.rsi.cinema.MainWindow</mainClass>
         </configuration>
       </plugin>
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>3.6.3</version>
+    <configuration>
+        <mainClass>pl.rsi.cinema.MainWindow</mainClass>
+    </configuration>
+</plugin>
     </plugins>
+
   </build>
 </project>

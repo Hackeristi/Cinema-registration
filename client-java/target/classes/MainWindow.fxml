@@ -25,11 +25,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.rsi.cinema.BookingController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+    prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21"
+    xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.rsi.cinema.BookingController">
 
     <BorderPane style="-fx-background-color: #121212;">
         <left>
-            <VBox prefHeight="760.0" prefWidth="260" spacing="10" style="-fx-background-color: #181818;">
+            <VBox prefHeight="760.0" prefWidth="260" spacing="10"
+                style="-fx-background-color: #181818;">
                 <padding>
                     <Insets bottom="15" left="15" right="15" top="15" />
                 </padding>
@@ -40,17 +43,25 @@
                     </font>
                 </Label>
 
-                <TextField prefHeight="34.0" prefWidth="230.0" promptText="Search..." style="-fx-background-color: #252525; -fx-text-fill: white;">
+                <TextField prefHeight="34.0" prefWidth="230.0" promptText="Search..."
+                    style="-fx-background-color: #252525; -fx-text-fill: white;">
                     <font>
                         <Font name="Franklin Gothic Book" size="14.0" />
                     </font>
                 </TextField>
 
-                <TableView prefHeight="388.0" prefWidth="230.0" style="-fx-background-color: #181818;                  -fx-control-inner-background: #181818;                  -fx-font-family: 'Franklin Gothic Book';                  -fx-text-background-color: white;                  -fx-selection-bar: #313131;" VBox.vgrow="ALWAYS">
+                <TableView fx:id="moviesTable" prefHeight="388.0" prefWidth="230.0"
+                    style="-fx-background-color: #181818;                  -fx-control-inner-background: #181818;                  -fx-font-family: 'Franklin Gothic Book';                  -fx-text-background-color: white;                  -fx-selection-bar: #313131;"
+                    VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn prefWidth="90" style="-fx-background-color: #252525; -fx-text-fill: white;" text="Tytuł" />
-                        <TableColumn prefWidth="60" style="-fx-background-color: #252525; -fx-text-fill: white;" text="Gatunek" />
-                        <TableColumn prefWidth="60" style="-fx-background-color: #252525; -fx-text-fill: white;" text="Data" />
+                        <TableColumn fx:id="titleCol" prefWidth="90"
+                            style="-fx-background-color: #252525; -fx-text-fill: white;"
+                            text="Tytuł" />
+                        <TableColumn fx:id="genreCol" prefWidth="60"
+                            style="-fx-background-color: #252525; -fx-text-fill: white;"
+                            text="Gatunek" />
+                        <TableColumn fx:id="dateCol" prefWidth="60"
+                            style="-fx-background-color: #252525; -fx-text-fill: white;" text="Data" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -63,9 +74,12 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <ScrollPane fitToWidth="true" prefHeight="276.0" prefWidth="230.0" style="-fx-background-color: #121212; -fx-border-radius: 5; -fx-border-width: 2; -fx-border-color: #313131;">
+                        <ScrollPane fitToWidth="true" prefHeight="276.0" prefWidth="230.0"
+                            style="-fx-background-color: #121212; -fx-border-radius: 5; -fx-border-width: 2; -fx-border-color: #313131;">
                             <content>
-                                <VBox fx:id="seatsListContainer1" prefHeight="238.0" prefWidth="224.0" spacing="10.0" style="-fx-background-color: #121212;" />
+                                <VBox fx:id="seatsListContainer1" prefHeight="238.0"
+                                    prefWidth="224.0" spacing="10.0"
+                                    style="-fx-background-color: #121212;" />
                             </content>
                         </ScrollPane>
                     </children>
@@ -80,7 +94,7 @@
                 </padding>
 
                 <HBox alignment="CENTER_LEFT" prefHeight="53.0" prefWidth="980.0">
-                    <Label prefHeight="50.0" prefWidth="434.0" text="Diuna" textFill="WHITE">
+                    <Label fx:id="titleLabel" prefHeight="50.0" prefWidth="434.0" text="Diuna" textFill="WHITE">
                         <font>
                             <Font name="Franklin Gothic Book" size="25.0" />
                         </font>
@@ -90,7 +104,7 @@
                     </Label>
                     <Region HBox.hgrow="ALWAYS" />
                     <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="496.0" spacing="10">
-                        <Label text="151 min" textFill="#aaa">
+                        <Label fx:id="durationLabel" text="151 min" textFill="#aaa">
                             <font>
                                 <Font name="Franklin Gothic Book" size="15.0" />
                             </font>
@@ -100,7 +114,7 @@
                                 <Insets bottom="10.0" top="10.0" />
                             </padding>
                         </Separator>
-                        <Label text="Sci-FI" textFill="#aaa">
+                        <Label fx:id="genreLabel" text="Sci-FI" textFill="#aaa">
                             <font>
                                 <Font name="Franklin Gothic Book" size="15.0" />
                             </font>
@@ -110,7 +124,7 @@
                                 <Insets bottom="10.0" top="10.0" />
                             </padding>
                         </Separator>
-                        <Label text="Rok: 2021" textFill="#aaa">
+                        <Label fx:id="yearLabel" text="Rok: 2021" textFill="#aaa">
                             <font>
                                 <Font name="Franklin Gothic Book" size="15.0" />
                             </font>
@@ -120,7 +134,7 @@
                                 <Insets bottom="10.0" top="10.0" />
                             </padding>
                         </Separator>
-                        <Label text="Reżyser: Denis Villeneuve" textFill="#aaa">
+                        <Label fx:id="directorLabel" text="Reżyser: Denis Villeneuve" textFill="#aaa">
                             <font>
                                 <Font name="Franklin Gothic Book" size="15.0" />
                             </font>
@@ -141,8 +155,10 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <VBox alignment="CENTER" prefHeight="272.0" prefWidth="203.0" style="-fx-border-color: #313131; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: #1a1a1a;">
-                            <ImageView fitHeight="222.0" fitWidth="184.0" pickOnBounds="true" preserveRatio="true" />
+                        <VBox alignment="CENTER" prefHeight="272.0" prefWidth="203.0"
+                            style="-fx-border-color: #313131; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: #1a1a1a;">
+                            <ImageView fx:id="coverImage" fitHeight="222.0" fitWidth="184.0" pickOnBounds="true"
+                                preserveRatio="true" />
                         </VBox>
                     </VBox>
 
@@ -152,7 +168,9 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <TextArea editable="false" prefHeight="291.0" prefWidth="185.0" style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;" wrapText="true" />
+                        <TextArea fx:id="actorsArea" editable="false" prefHeight="291.0" prefWidth="185.0"
+                            style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-font: normal 15px; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;"
+                            wrapText="true" />
                     </VBox>
 
                     <VBox prefHeight="339.0" prefWidth="619.0" spacing="5" HBox.hgrow="ALWAYS">
@@ -161,51 +179,48 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <TextArea editable="false" prefHeight="205.0" prefWidth="506.0" style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;" wrapText="true" VBox.vgrow="ALWAYS" />
+                        <TextArea fx:id="descriptionArea" editable="false" prefHeight="205.0" prefWidth="506.0"
+                            style="-fx-control-inner-background: #1a1a1a; -fx-text-fill: #bbb; -fx-font-family: 'Franklin Gothic Book'; -fx-font: normal 15 px; -fx-border-color: #313131; -fx-border-width: 2; -fx-background-color: #121212; -fx-faint-focus-color: transparent; -fx-focus-color: #313131; -fx-border-radius: 5;"
+                            wrapText="true" VBox.vgrow="ALWAYS" />
                     </VBox>
                 </HBox>
 
                 <HBox prefHeight="355.0" prefWidth="980.0" spacing="20" VBox.vgrow="ALWAYS">
                     <VBox prefHeight="350.0" prefWidth="674.0" spacing="10.0">
                         <HBox alignment="CENTER_LEFT" spacing="10">
-                            <Label prefHeight="22.0" prefWidth="165.0" text="Plan Widowni: Sala 1" textFill="WHITE">
+                            <Label prefHeight="22.0" prefWidth="165.0" text="Plan Widowni: Sala 1"
+                                textFill="WHITE">
                                 <font>
                                     <Font name="Franklin Gothic Book" size="18.0" />
                                 </font>
                             </Label>
                             <Region prefHeight="28.0" prefWidth="96.0" />
-                            <ComboBox fx:id="MovieDate" prefHeight="25.0" prefWidth="154.0" promptText="Data" style="-fx-background-color: #121212;             -fx-border-color: #313131;             -fx-border-radius: 5;             -fx-font-family: 'Franklin Gothic Book';             -fx-font-size: 14;             -fx-text-fill: white;             -fx-prompt-text-fill: white;             -fx-text-base-color: white;">
+                            <ComboBox fx:id="MovieDate" prefHeight="25.0" prefWidth="154.0"
+                                promptText="Data"
+                                style="-fx-background-color: #121212;             -fx-border-color: #313131;             -fx-border-radius: 5;             -fx-font-family: 'Franklin Gothic Book';             -fx-font-size: 14;             -fx-text-fill: white;             -fx-prompt-text-fill: white;             -fx-text-base-color: white;">
                             </ComboBox>
-                            <Button fx:id="timeBtn1430" onAction="#handleTimeSelection" prefHeight="28.0" prefWidth="70.0" style="-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5;" text="14:30" textFill="WHITE">
-                                <font>
-                                    <Font name="Franklin Gothic Book" size="14.0" />
-                                </font>
-                            </Button>
-                            <Button fx:id="timeBtn1700" onAction="#handleTimeSelection" prefWidth="70.0" style="-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5;" text="17:00" textFill="WHITE">
-                                <font>
-                                    <Font name="Franklin Gothic Book" size="14.0" />
-                                </font>
-                            </Button>
-                            <Button fx:id="timeBtn1930" onAction="#handleTimeSelection" prefWidth="70.0" style="-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5;" text="19:30" textFill="WHITE">
-                                <font>
-                                    <Font name="Franklin Gothic Book" size="14.0" />
-                                </font>
-                            </Button>
+                            <HBox fx:id="timeButtonsContainer" >
+                                
+                            </HBox>
                         </HBox>
-                        <HBox prefHeight="314.0" prefWidth="674.0" spacing="20.0" style="-fx-border-radius: 5; -fx-border-color: #313131; -fx-border-width: 2;">
+                        <HBox prefHeight="314.0" prefWidth="674.0" spacing="20.0"
+                            style="-fx-border-radius: 5; -fx-border-color: #313131; -fx-border-width: 2;">
                             <children>
                                 <VBox prefHeight="318.0" prefWidth="129.0" spacing="10.0">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="5">
-                                            <Region prefHeight="15" prefWidth="15" style="-fx-background-color: #808080; -fx-background-radius: 3;" />
+                                            <Region prefHeight="15" prefWidth="15"
+                                                style="-fx-background-color: #808080; -fx-background-radius: 3;" />
                                             <Label text="Dostępne" textFill="WHITE" />
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" spacing="5">
-                                            <Region prefHeight="15" prefWidth="15" style="-fx-background-color: #333333; -fx-background-radius: 3;" />
+                                            <Region prefHeight="15" prefWidth="15"
+                                                style="-fx-background-color: #333333; -fx-background-radius: 3;" />
                                             <Label text="Zajęte" textFill="WHITE" />
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" spacing="5">
-                                            <Region prefHeight="15" prefWidth="15" style="-fx-background-color: #FF0000; -fx-background-radius: 3;" />
+                                            <Region prefHeight="15" prefWidth="15"
+                                                style="-fx-background-color: #FF0000; -fx-background-radius: 3;" />
                                             <Label text="Rezerwacja" textFill="WHITE" />
                                         </HBox>
                                     </children>
@@ -215,115 +230,374 @@
                                 </VBox>
                                 <VBox prefHeight="279.0" prefWidth="586.0">
                                     <children>
-                                        <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="541.0" spacing="5">
+                                        <HBox alignment="CENTER_LEFT" prefHeight="40.0"
+                                            prefWidth="541.0" spacing="5">
                                             <children>
-                                                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="38.0" prefWidth="501.0" style="-fx-background-color: #808080;" text="EKRAN" textAlignment="CENTER">
+                                                <Label alignment="CENTER" contentDisplay="CENTER"
+                                                    prefHeight="38.0" prefWidth="501.0"
+                                                    style="-fx-background-color: #808080;"
+                                                    text="EKRAN" textAlignment="CENTER">
                                                     <font>
-                                                        <Font name="Franklin Gothic Heavy" size="18.0" />
+                                                        <Font name="Franklin Gothic Heavy"
+                                                            size="18.0" />
                                                     </font>
                                                     <HBox.margin>
-                                                        <Insets bottom="10.0" left="20.0" right="20.0" />
+                                                        <Insets bottom="10.0" left="20.0"
+                                                            right="20.0" />
                                                     </HBox.margin>
                                                 </Label>
                                             </children>
                                         </HBox>
 
-                                        <GridPane fx:id="seatGrid" alignment="TOP_CENTER" hgap="6" prefHeight="253.0" prefWidth="541.0" vgap="6">
+                                        <GridPane fx:id="seatGrid" alignment="TOP_CENTER" hgap="6"
+                                            prefHeight="253.0" prefWidth="541.0" vgap="6">
                                             <padding>
                                                 <Insets top="10" />
                                             </padding>
                                             <children>
-                                                <Button fx:id="A1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                                <Button fx:id="A2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                                                <Button fx:id="A3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="0" />
-                                                <Button fx:id="A4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="0" />
-                                                <Button fx:id="A5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="0" />
-                                                <Button fx:id="A6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="0" />
-                                                <Button fx:id="A7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="0" />
-                                                <Button fx:id="A8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="0" />
-                                                <Button fx:id="A9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="0" />
-                                                <Button fx:id="A10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="0" />
+                                                <Button fx:id="A1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="0" />
+                                                <Button fx:id="A10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="0" />
 
-                                                <Button fx:id="B1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Button fx:id="B2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                                <Button fx:id="B3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                                                <Button fx:id="B4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                                                <Button fx:id="B5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                                                <Button fx:id="B6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-                                                <Button fx:id="B7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="1" />
-                                                <Button fx:id="B8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="1" />
-                                                <Button fx:id="B9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="1" />
-                                                <Button fx:id="B10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="1" />
+                                                <Button fx:id="B1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="1" />
+                                                <Button fx:id="B10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="1" />
 
-                                                <Button fx:id="C1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <Button fx:id="C2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                                                <Button fx:id="C3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                                                <Button fx:id="C4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                                                <Button fx:id="C5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                                                <Button fx:id="C6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="2" />
-                                                <Button fx:id="C7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="2" />
-                                                <Button fx:id="C8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="2" />
-                                                <Button fx:id="C9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="2" />
-                                                <Button fx:id="C10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="2" />
+                                                <Button fx:id="C1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="2" />
+                                                <Button fx:id="C10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="2" />
 
-                                                <Button fx:id="D1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <Button fx:id="D2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                                <Button fx:id="D3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                                                <Button fx:id="D4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                                                <Button fx:id="D5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-                                                <Button fx:id="D6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="3" />
-                                                <Button fx:id="D7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="3" />
-                                                <Button fx:id="D8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="3" />
-                                                <Button fx:id="D9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="3" />
-                                                <Button fx:id="D10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="3" />
+                                                <Button fx:id="D1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="3" />
+                                                <Button fx:id="D10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="3" />
 
-                                                <Button fx:id="E0" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                                                <Button fx:id="E1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                <Button fx:id="E2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                                                <Button fx:id="E3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                                                <Button fx:id="E4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-                                                <Button fx:id="E5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                                                <Button fx:id="E6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="4" />
-                                                <Button fx:id="E7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="4" />
-                                                <Button fx:id="E8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="4" />
-                                                <Button fx:id="E9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="4" />
-                                                <Button fx:id="E10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="4" />
-                                                <Button fx:id="E11" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="11" GridPane.rowIndex="4" />
+                                                <Button fx:id="E0" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="0"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="4" />
+                                                <Button fx:id="E11" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="11"
+                                                    GridPane.rowIndex="4" />
 
-                                                <Button fx:id="F0" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-                                                <Button fx:id="F1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                                <Button fx:id="F2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                                                <Button fx:id="F3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-                                                <Button fx:id="F4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="5" />
-                                                <Button fx:id="F5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="5" />
-                                                <Button fx:id="F6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-                                                <Button fx:id="F7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="5" />
-                                                <Button fx:id="F8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="5" />
-                                                <Button fx:id="F9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="5" />
-                                                <Button fx:id="F10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="5" />
-                                                <Button fx:id="F11" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="11" GridPane.rowIndex="5" />
+                                                <Button fx:id="F0" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="0"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="5" />
+                                                <Button fx:id="F11" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="11"
+                                                    GridPane.rowIndex="5" />
 
-                                                <Button fx:id="G0" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-                                                <Button fx:id="G1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                                <Button fx:id="G2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                                                <Button fx:id="G3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="6" />
-                                                <Button fx:id="G4" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="4" GridPane.rowIndex="6" />
-                                                <Button fx:id="G5" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="5" GridPane.rowIndex="6" />
-                                                <Button fx:id="G6" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="6" GridPane.rowIndex="6" />
-                                                <Button fx:id="G7" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="7" GridPane.rowIndex="6" />
-                                                <Button fx:id="G8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="6" />
-                                                <Button fx:id="G9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="6" />
-                                                <Button fx:id="G10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="6" />
-                                                <Button fx:id="G11" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="11" GridPane.rowIndex="6" />
+                                                <Button fx:id="G0" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="0"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G4" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="4"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G5" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="5"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G6" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="6"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G7" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="7"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="6" />
+                                                <Button fx:id="G11" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="11"
+                                                    GridPane.rowIndex="6" />
 
-                                                <Button fx:id="H0" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                                                <Button fx:id="H1" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                                <Button fx:id="H2" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-                                                <Button fx:id="H3" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-                                                <Button fx:id="H8" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="8" GridPane.rowIndex="7" />
-                                                <Button fx:id="H9" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="9" GridPane.rowIndex="7" />
-                                                <Button fx:id="H10" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="10" GridPane.rowIndex="7" />
-                                                <Button fx:id="H11" onAction="#handleSeatClick" style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;" textFill="WHITE" GridPane.columnIndex="11" GridPane.rowIndex="7" />
+                                                <Button fx:id="H0" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="0"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H1" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="1"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H2" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="2"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H3" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="3"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H8" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="8"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H9" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="9"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H10" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="10"
+                                                    GridPane.rowIndex="7" />
+                                                <Button fx:id="H11" onAction="#handleSeatClick"
+                                                    style="-fx-background-color: #808080; -fx-background-radius: 4; -fx-min-width: 28; -fx-min-height: 28;"
+                                                    textFill="WHITE" GridPane.columnIndex="11"
+                                                    GridPane.rowIndex="7" />
                                             </children>
                                             <columnConstraints>
                                                 <ColumnConstraints />
@@ -372,19 +646,25 @@
                     </VBox>
 
                     <VBox prefWidth="279.0" spacing="12.0">
-                        <Label prefHeight="26.0" prefWidth="146.0" text="Wybrane Miejsca" textFill="WHITE">
+                        <Label prefHeight="26.0" prefWidth="146.0" text="Wybrane Miejsca"
+                            textFill="WHITE">
                             <font>
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
 
-                        <VBox prefHeight="173.0" prefWidth="279.0" spacing="15.0" style="-fx-border-color: #313131; -fx-border-radius: 5; -fx-border-width: 2;">
+                        <VBox prefHeight="173.0" prefWidth="279.0" spacing="15.0"
+                            style="-fx-border-color: #313131; -fx-border-radius: 5; -fx-border-width: 2;">
 
-                            <ScrollPane fitToWidth="true" prefHeight="173.0" prefWidth="275.0" style="-fx-background-color: #121212; -fx-padding: 0;">
+                            <ScrollPane fitToWidth="true" prefHeight="173.0" prefWidth="275.0"
+                                style="-fx-background-color: #121212; -fx-padding: 0;">
                                 <content>
-                                    <VBox fx:id="seatsListContainer" prefHeight="169.0" prefWidth="275.0" spacing="10.0" style="-fx-background-color: #121212;">
+                                    <VBox fx:id="seatsListContainer" prefHeight="169.0"
+                                        prefWidth="275.0" spacing="10.0"
+                                        style="-fx-background-color: #121212;">
                                         <padding>
-                                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                            <Insets bottom="10.0" left="10.0" right="10.0"
+                                                top="10.0" />
                                         </padding>
                                     </VBox>
                                 </content>
@@ -396,13 +676,19 @@
                                 <Font name="Franklin Gothic Book" size="18.0" />
                             </font>
                         </Label>
-                        <VBox spacing="10.0" style="-fx-border-color: #313131; -fx-border-radius: 5; -fx-border-width: 2; -fx-padding: 10;">
-                            <Button fx:id="confirmReservationButton" maxWidth="Infinity" onAction="#handleConfirmReservation" prefHeight="40" style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;" text="Potwierdź Rezerwację" textFill="WHITE">
+                        <VBox spacing="10.0"
+                            style="-fx-border-color: #313131; -fx-border-radius: 5; -fx-border-width: 2; -fx-padding: 10;">
+                            <Button fx:id="confirmReservationButton" maxWidth="Infinity"
+                                onAction="#handleConfirmReservation" prefHeight="40"
+                                style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;"
+                                text="Potwierdź Rezerwację" textFill="WHITE">
                                 <font>
                                     <Font name="Franklin Gothic Book" size="14.0" />
                                 </font>
                             </Button>
-                            <Button maxWidth="Infinity" prefHeight="40" style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;" text="Pobierz Potwierdzenie PDF" textFill="WHITE">
+                            <Button maxWidth="Infinity" prefHeight="40"
+                                style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;"
+                                text="Pobierz Potwierdzenie PDF" textFill="WHITE">
                                 <font>
                                     <Font name="Franklin Gothic Book" size="14.0" />
                                 </font>
@@ -419,9 +705,13 @@
             </VBox>
         </center>
         <top>
-            <ToolBar nodeOrientation="RIGHT_TO_LEFT" style="-fx-background-color: #121212; -fx-border-color: #313131;" BorderPane.alignment="CENTER">
+            <ToolBar nodeOrientation="RIGHT_TO_LEFT"
+                style="-fx-background-color: #121212; -fx-border-color: #313131;"
+                BorderPane.alignment="CENTER">
                 <items>
-                    <Button contentDisplay="RIGHT" prefHeight="28.0" prefWidth="75.0" style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;" text="Wyloguj" textFill="WHITE">
+                    <Button contentDisplay="RIGHT" prefHeight="28.0" prefWidth="75.0"
+                        style="-fx-background-color: #313131; -fx-border-color: #393939; -fx-border-radius: 5;"
+                        text="Wyloguj" textFill="WHITE">
                         <font>
                             <Font name="Franklin Gothic Book" size="14.0" />
                         </font>
@@ -439,7 +729,9 @@
             </ToolBar>
         </top>
         <bottom>
-            <ToolBar prefHeight="0.0" prefWidth="1280.0" style="-fx-background-color: #121212; -fx-border-color: #313131;" BorderPane.alignment="CENTER">
+            <ToolBar prefHeight="0.0" prefWidth="1280.0"
+                style="-fx-background-color: #121212; -fx-border-color: #313131;"
+                BorderPane.alignment="CENTER">
                 <items>
                     <Label text="Połączono z serwerem .NET" textFill="WHITE">
                         <font>
@@ -456,30 +748,37 @@
             </ToolBar>
         </bottom>
     </BorderPane>
-    <VBox fx:id="authOverlay" alignment="CENTER" managed="false" style="-fx-background-color: rgba(0,0,0,0.85);" visible="false">
+    <VBox fx:id="authOverlay" alignment="CENTER" managed="false"
+        style="-fx-background-color: rgba(0,0,0,0.85);" visible="false">
 
-        <VBox fx:id="authModal" maxWidth="420" spacing="20" style="-fx-background-color: #121212; -fx-padding: 40; -fx-background-radius: 10;">
+        <VBox fx:id="authModal" maxWidth="420" spacing="20"
+            style="-fx-background-color: #121212; -fx-padding: 40; -fx-background-radius: 10;">
 
             <!-- ================= LOGIN ================= -->
             <VBox fx:id="loginForm" spacing="20">
 
-                <Label style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;" text="Logowanie" />
+                <Label style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;"
+                    text="Logowanie" />
 
                 <VBox spacing="5">
                     <Label style="-fx-text-fill:#aaa;" text="E-mail" />
-                    <TextField fx:id="loginEmail" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <TextField fx:id="loginEmail"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
                 <VBox spacing="5">
                     <Label style="-fx-text-fill:#aaa;" text="Hasło" />
-                    <PasswordField fx:id="loginPassword" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <PasswordField fx:id="loginPassword"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
-                <Button maxWidth="Infinity" onAction="#handleLogin" style="-fx-background-color:#0078D7; -fx-text-fill:white;" text="Zaloguj się" />
+                <Button maxWidth="Infinity" onAction="#handleLogin"
+                    style="-fx-background-color:#0078D7; -fx-text-fill:white;" text="Zaloguj się" />
 
                 <HBox alignment="CENTER">
                     <Label text="Nie masz konta?" textFill="WHITE" />
-                    <Hyperlink onAction="#showRegisterForm" text=" Zarejestruj się" textFill="#4fb3ff" />
+                    <Hyperlink onAction="#showRegisterForm" text=" Zarejestruj się"
+                        textFill="#4fb3ff" />
                 </HBox>
 
             </VBox>
@@ -487,29 +786,41 @@
             <!-- ================= REGISTER ================= -->
             <VBox fx:id="registerForm" managed="false" spacing="15" visible="false">
 
-                <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;" text="Rejestracja" />
+                <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;"
+                    text="Rejestracja" />
 
                 <VBox spacing="5">
-                    <Label style="-fx-text-fill:#aaa;" text="Imię i nazwisko" />
-                    <TextField fx:id="registerName" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <Label style="-fx-text-fill:#aaa;" text="Imię" />
+                    <TextField fx:id="registerName"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                </VBox>
+                <VBox spacing="5">
+                    <Label style="-fx-text-fill:#aaa;" text="Nazwisko" />
+                    <TextField fx:id="registerSurname"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
                 <VBox spacing="5">
                     <Label style="-fx-text-fill:#aaa;" text="E-mail" />
-                    <TextField fx:id="registerEmail" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <TextField fx:id="registerEmail"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
                 <VBox spacing="5">
                     <Label style="-fx-text-fill:#aaa;" text="Hasło" />
-                    <PasswordField fx:id="registerPassword" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <PasswordField fx:id="registerPassword"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
                 <VBox spacing="5">
                     <Label style="-fx-text-fill:#aaa;" text="Powtórz hasło" />
-                    <PasswordField fx:id="registerConfirmPassword" style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
+                    <PasswordField fx:id="registerConfirmPassword"
+                        style="-fx-background-color:#1a1a1a; -fx-text-fill:white;" />
                 </VBox>
 
-                <Button maxWidth="Infinity" onAction="#handleRegister" style="-fx-background-color:#0078D7; -fx-text-fill:white;" text="Zarejestruj się" />
+                <Button maxWidth="Infinity" onAction="#handleRegister"
+                    style="-fx-background-color:#0078D7; -fx-text-fill:white;"
+                    text="Zarejestruj się" />
 
                 <HBox alignment="CENTER">
                     <Label text="Masz konto?" textFill="WHITE" />
