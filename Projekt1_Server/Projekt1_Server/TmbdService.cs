@@ -142,26 +142,51 @@ public class TmdbService
     
     public async Task GenerateScheduleAsync()
     {
-        if (await _context.FilmShows.AnyAsync()) return;
-
         var movies = await _context.Movies.ToListAsync();
         if (!movies.Any())
         {
             Console.WriteLine("Brak filmów w bazie! Najpierw pobierz filmy.");
             return;
         }
+        
+        DateTime startGeneratingFromDate = DateTime.Today;
 
+        var latestShow = await _context.FilmShows
+            .OrderByDescending(fs => fs.ShowDatetime)
+            .FirstOrDefaultAsync();
+
+        if (latestShow != null && latestShow.ShowDatetime.Date >= DateTime.Today)
+        {
+            startGeneratingFromDate = latestShow.ShowDatetime.Date.AddDays(1);
+        }
+        
+        DateTime targetEndDate = DateTime.Today.AddDays(7);
+        
+        if (startGeneratingFromDate >= targetEndDate)
+        {
+            Console.WriteLine("Harmonogram jest już pełny na co najmniej 7 dni w przód.");
+            return;
+        }
+        
+        int daysToGenerate = (targetEndDate - startGeneratingFromDate).Days;
+        
         var screenIds = new List<int> { 1, 2, 3, 4, 5, 6 };
         var random = new Random();
         
-        int currentShowId = 1; 
-        
-        for (int dayOffset = 0; dayOffset < 7; dayOffset++)
+        int currentShowId = 1;
+        if (await _context.FilmShows.AnyAsync())
         {
-            DateTime todayStart = DateTime.Today.AddDays(dayOffset).AddHours(10);
+            currentShowId = await _context.FilmShows.MaxAsync(fs => fs.FilmShowId) + 1;
+        }
+        
+        Console.WriteLine($"Generowanie harmonogramu od {startGeneratingFromDate.ToShortDateString()} na {daysToGenerate} dni...");
 
-            var screenAvailableFrom = screenIds.ToDictionary(s => s, s => todayStart);
-            var movieAvailableFrom = movies.ToDictionary(m => m.MovieId, m => todayStart);
+        for (int dayOffset = 0; dayOffset < daysToGenerate; dayOffset++)
+        {
+            DateTime dailyStart = startGeneratingFromDate.AddDays(dayOffset).AddHours(10);
+
+            var screenAvailableFrom = screenIds.ToDictionary(s => s, s => dailyStart);
+            var movieAvailableFrom = movies.ToDictionary(m => m.MovieId, m => dailyStart);
 
             var showsToSchedule = new List<Movie>();
             for (int i = 0; i < 3; i++)
@@ -205,6 +230,6 @@ public class TmdbService
         }
 
         await _context.SaveChangesAsync();
-        Console.WriteLine("Pomyślnie wygenerowano harmonogram seansów na 7 dni!");
+        Console.WriteLine($"Pomyślnie dopisano {daysToGenerate} dni do harmonogramu!");
     }
 }
