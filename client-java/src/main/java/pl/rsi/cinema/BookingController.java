@@ -117,7 +117,6 @@ public class BookingController {
     private int currentFilmShowId = -1;
     private final Map<String, Integer> seatIdMap = new HashMap<>();
     private final Map<Integer, MovieFromServer> filmShowToMovieMap = new HashMap<>();
-    private String editingShowDatetime = "";
     private MovieFromServer activeMovie;
     private boolean editMode = false;
     @FXML
@@ -955,29 +954,18 @@ public class BookingController {
         this.editMode = true;
         this.editingReservationId = reservationId;
 
-        // zmiana tekstu przycisku
         Platform.runLater(() -> {
             confirmReservationButton.setText("Zapisz zmiany");
         });
+
         this.currentFilmShowId = filmShowId;
         this.selectedTime = time;
         this.editingSeatKeys = new HashSet<>(seatKeys);
 
-        box.setOpacity(0.5);
+        // 🔥 NAJPIERW odśwież
+        refreshOccupancy();
 
-        // 🔥 KLUCZOWE: fallback jeśli movie == null
-        if (movie == null) {
-            movie = filmShowToMovieMap.get(filmShowId);
-        }
-
-        if (movie != null) {
-            activeMovie = movie;
-            showMovieDetails(movie);
-            updateAvailableTimes(movie);
-        } else {
-            System.out.println("❌ Nadal brak filmu dla showId: " + filmShowId);
-        }
-
+        // 🔥 potem zaznacz miejsca
         selectedSeatKeys.clear();
         seatsListContainer.getChildren().clear();
 
@@ -987,7 +975,11 @@ public class BookingController {
             int col = Integer.parseInt(parts[1]);
 
             selectedSeatKeys.add(key);
+
+            // czerwony kolor (wybrane)
             seatController.preselectSeatColor(key);
+
+            // dodanie do VBox
             addSeatToList(key, row, col);
         }
 
@@ -1003,8 +995,9 @@ public class BookingController {
     }
 
     public void addSeatToList(String seatKey, int row, int col) {
-        if (selectedSeatKeys.contains(seatKey))
-            return;
+        if (!selectedSeatKeys.contains(seatKey)) {
+            selectedSeatKeys.add(seatKey);
+        }
         String rowLetter = String.valueOf((char) ('A' + row - 1));
         Label seatLabel = new Label("Rząd: " + rowLetter + " miejsce " + col);
         seatLabel.setStyle("-fx-text-fill: white; -fx-font-size: 13;");
