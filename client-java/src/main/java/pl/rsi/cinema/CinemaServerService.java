@@ -31,6 +31,56 @@ public class CinemaServerService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private boolean lastPosterWasMtom = false;
 
+    public MovieDetails getMovieDetailsFromReservation(int reservationId) {
+
+        try {
+            String soap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                    "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body>" +
+                    "<GetMovieDetailsFromReservation xmlns=\"http://tempuri.org/\">" +
+                    "<reservationId>" + reservationId + "</reservationId>" +
+                    "</GetMovieDetailsFromReservation>" +
+                    "</soap:Body>" +
+                    "</soap:Envelope>";
+
+            String xml = sendSoap("GetMovieDetailsFromReservation", soap);
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+
+            Document doc = factory.newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+            Element res = (Element) doc.getElementsByTagNameNS("*", "GetMovieDetailsFromReservationResult").item(0);
+
+            if (res == null)
+                return null;
+
+            // ACTORS parsing (jeśli są jak w GetMovieDetails)
+            StringBuilder actorsBuilder = new StringBuilder();
+            NodeList actors = doc.getElementsByTagNameNS("*", "string");
+
+            for (int i = 0; i < actors.getLength(); i++) {
+                if (i > 0)
+                    actorsBuilder.append("\n");
+                actorsBuilder.append(actors.item(i).getTextContent());
+            }
+
+            return new MovieDetails(
+                    getValue(res, "Title"),
+                    getValue(res, "Description"),
+                    getValue(res, "Director"),
+                    actorsBuilder.toString(),
+                    Integer.parseInt(getValue(res, "Duration")),
+                    getValue(res, "Premiere"),
+                    getValue(res, "Poster"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean wasLastPosterMtom() {
         return lastPosterWasMtom;
     }
@@ -666,8 +716,11 @@ public class CinemaServerService {
 
             String idStr = getValue(result, "ReservationId");
             int reservationId = (idStr != null && !idStr.isBlank()) ? Integer.parseInt(idStr) : 0;
-
-            return new ReservationCreateResultDto(reservationId);
+            List<String> seatKeys = new ArrayList<>();
+            for (int id : seatIds) {
+                seatKeys.add(String.valueOf(id));
+            }
+            return new ReservationCreateResultDto(reservationId, seatKeys);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -732,15 +785,21 @@ public class CinemaServerService {
         }
     }
 
-    public static class ReservationCreateResultDto {
-        private final int reservationId;
+    public class ReservationCreateResultDto {
+        private int reservationId;
+        private List<String> seatKeys;
 
-        public ReservationCreateResultDto(int reservationId) {
+        public ReservationCreateResultDto(int reservationId, List<String> seatKeys) {
             this.reservationId = reservationId;
+            this.seatKeys = seatKeys;
         }
 
         public int getReservationId() {
             return reservationId;
+        }
+
+        public List<String> getSeatKeys() {
+            return seatKeys;
         }
     }
 
