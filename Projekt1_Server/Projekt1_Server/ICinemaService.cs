@@ -44,4 +44,7 @@ public interface ICinemaService
 
     [OperationContract]
     byte[] GetMoviePoster(int movieId);
+
+    [OperationContract]
+    int GetMovieId(int filmshowId);
 }
