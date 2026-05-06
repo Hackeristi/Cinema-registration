@@ -1,3 +1,4 @@
+
 package pl.rsi.cinema;
 
 import pl.rsi.cinema.dto.MovieFromServer;
@@ -72,6 +73,7 @@ public class CinemaServerService {
                     getValue(res, "Director"),
                     actorsBuilder.toString(),
                     Integer.parseInt(getValue(res, "Duration")),
+                    getValue(res, "Genre"),
                     getValue(res, "Premiere"),
                     getValue(res, "Poster"));
 
@@ -83,6 +85,34 @@ public class CinemaServerService {
 
     public boolean wasLastPosterMtom() {
         return lastPosterWasMtom;
+    }
+
+    // =========================================================
+    // 🆕 GetMovieId by showId
+    // =========================================================
+    public int getMovieId(int showId) {
+        try {
+            String soap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                    "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<soap:Body>" +
+                    "<GetMovieId xmlns=\"http://tempuri.org/\">" +
+                    "<showid>" + showId + "</showid>" +
+                    "</GetMovieId>" +
+                    "</soap:Body>" +
+                    "</soap:Envelope>";
+
+            String xml = sendSoap("GetMovieId", soap);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+            Element result = (Element) doc.getElementsByTagNameNS("*", "GetMovieIdResult").item(0);
+            if (result == null)
+                return -1;
+            return Integer.parseInt(result.getTextContent().trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     // ---------------------------
@@ -255,6 +285,7 @@ public class CinemaServerService {
                     getValue(res, "Director"),
                     finalActors,
                     Integer.parseInt(getValue(res, "Duration")),
+                    getValue(res, "Genre"),
                     getValue(res, "Premiere"),
                     getValue(res, "Poster"));
 
@@ -392,17 +423,19 @@ public class CinemaServerService {
         private final String director;
         private final String actors;
         private final int duration;
+        private final String genre;
         private final String premiere;
         private final String posterBase64;
 
         public MovieDetails(String title, String description, String director,
-                String actors, int duration,
+                String actors, int duration, String genre,
                 String premiere, String posterBase64) {
             this.title = title;
             this.description = description;
             this.director = director;
             this.actors = actors;
             this.duration = duration;
+            this.genre = genre;
             this.premiere = premiere;
             this.posterBase64 = posterBase64;
         }
@@ -433,6 +466,10 @@ public class CinemaServerService {
 
         public String getPoster() {
             return posterBase64;
+        }
+
+        public String getGenre() {
+            return genre;
         }
     }
 
