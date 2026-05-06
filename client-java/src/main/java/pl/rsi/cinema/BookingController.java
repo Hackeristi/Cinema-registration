@@ -1,3 +1,4 @@
+
 package pl.rsi.cinema;
 
 import javafx.application.Platform;
@@ -117,7 +118,6 @@ public class BookingController {
     private int currentFilmShowId = -1;
     private final Map<String, Integer> seatIdMap = new HashMap<>();
     private final Map<Integer, MovieFromServer> filmShowToMovieMap = new HashMap<>();
-    private String editingShowDatetime = "";
     private MovieFromServer activeMovie;
     private boolean editMode = false;
     @FXML
@@ -213,6 +213,21 @@ public class BookingController {
         }
     }
 
+    // Helper to show movie by showId using GetMovieId
+    public void showMovieByShowId(int showId) {
+        if (showId <= 0) {
+            showAlert("Błąd", "Nieprawidłowy identyfikator seansu: " + showId);
+            return;
+        }
+        int movieId = serverService.getMovieId(showId);
+        if (movieId > 0) {
+            loadMovieDetails(movieId);
+        } else {
+            showAlert("Błąd",
+                    "Nie udało się pobrać filmu dla seansu: " + showId + " (błąd serwera lub nieprawidłowy showId)");
+        }
+    }
+
     private void showMovieDetails(MovieFromServer movie) {
         try {
             MovieDetails details = serverService.getMovieDetails(movie.getMovieId());
@@ -224,6 +239,20 @@ public class BookingController {
                 durationLabel.setText(details.getDuration() + " min");
                 yearLabel.setText(String.valueOf(details.getPremiere()));
                 actorsArea.setText(details.getActors());
+                String genre = movie.getGenre();
+
+                if (genre != null) {
+                    int first = genre.indexOf('/');
+                    int second = first != -1 ? genre.indexOf('/', first + 1) : -1;
+
+                    if (second != -1) {
+                        genreLabel.setText(genre.substring(0, second));
+                    } else {
+                        genreLabel.setText(genre);
+                    }
+                } else {
+                    genreLabel.setText("");
+                }
             });
 
             new Thread(() -> {
@@ -351,7 +380,7 @@ public class BookingController {
             titleLabel.setText(movie.getTitle());
             durationLabel.setText(movie.getDuration() + " min");
             directorLabel.setText("Reżyser: " + movie.getDirector());
-
+            genreLabel.setText(movie.getGenre());
             // PREMIERE (String → rok)
             if (movie.getPremiere() != null && movie.getPremiere().length() >= 4) {
                 yearLabel.setText("Rok: " + movie.getPremiere().substring(0, 4));
@@ -944,9 +973,21 @@ public class BookingController {
             String showDatetime,
             MovieFromServer movie) {
 
-        System.out.println("EDIT CLICK:");
-        System.out.println("Datetime: " + showDatetime);
+        System.out.println("===== EDIT MODE DEBUG =====");
+        System.out.println("Reservation ID: " + reservationId);
+        System.out.println("FilmShow ID: " + filmShowId);
 
+        int movieIdFromShow = serverService.getMovieId(filmShowId);
+        System.out.println("Movie ID (from showId): " + movieIdFromShow);
+
+        if (movie != null) {
+            System.out.println("Movie ID (object): " + movie.getMovieId());
+            System.out.println("Movie Title: " + movie.getTitle());
+        } else {
+            System.out.println("Movie object is NULL");
+        }
+
+        System.out.println("===========================");
         if (isPast(showDatetime)) {
             showAlert("Błąd", "Nie można edytować rezerwacji (seans minął)");
             return;
@@ -955,29 +996,18 @@ public class BookingController {
         this.editMode = true;
         this.editingReservationId = reservationId;
 
-        // zmiana tekstu przycisku
         Platform.runLater(() -> {
             confirmReservationButton.setText("Zapisz zmiany");
         });
+
         this.currentFilmShowId = filmShowId;
         this.selectedTime = time;
         this.editingSeatKeys = new HashSet<>(seatKeys);
 
-        box.setOpacity(0.5);
+        // Always refresh occupancy first
+        refreshOccupancy();
 
-        // 🔥 KLUCZOWE: fallback jeśli movie == null
-        if (movie == null) {
-            movie = filmShowToMovieMap.get(filmShowId);
-        }
-
-        if (movie != null) {
-            activeMovie = movie;
-            showMovieDetails(movie);
-            updateAvailableTimes(movie);
-        } else {
-            System.out.println("❌ Nadal brak filmu dla showId: " + filmShowId);
-        }
-
+        // Clear and re-add all seats to moje miejsca (selectedSeatKeys)
         selectedSeatKeys.clear();
         seatsListContainer.getChildren().clear();
 
@@ -985,16 +1015,17 @@ public class BookingController {
             String[] parts = key.split(",");
             int row = Integer.parseInt(parts[0]);
             int col = Integer.parseInt(parts[1]);
-
             selectedSeatKeys.add(key);
             seatController.preselectSeatColor(key);
             addSeatToList(key, row, col);
         }
 
-        refreshOccupancy();
-        for (String key : seatKeys) {
+        // Ensure all seats in editing are in moje miejsca
+        for (String key : selectedSeatKeys) {
             seatController.preselectSeatColor(key);
         }
+        // Optionally, show movie for this showId using new backend method
+        showMovieByShowId(filmShowId);
     }
 
     @FXML
@@ -1003,8 +1034,9 @@ public class BookingController {
     }
 
     public void addSeatToList(String seatKey, int row, int col) {
-        if (selectedSeatKeys.contains(seatKey))
-            return;
+        if (!selectedSeatKeys.contains(seatKey)) {
+            selectedSeatKeys.add(seatKey);
+        }
         String rowLetter = String.valueOf((char) ('A' + row - 1));
         Label seatLabel = new Label("Rząd: " + rowLetter + " miejsce " + col);
         seatLabel.setStyle("-fx-text-fill: white; -fx-font-size: 13;");
