@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {}
+    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {}
   },
   "projects": {
-    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {
+    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
+        "projectUniqueName": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
         "projectName": "Projekt1_Server",
-        "projectPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
+        "projectPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
         "packagesPath": "C:\\Users\\karin\\.nuget\\packages\\",
-        "outputPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt\\Projekt1_Server\\Projekt1_Server\\obj\\",
+        "outputPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -43,19 +44,46 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "CoreWCF.Http": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "CoreWCF.Primitives": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.25, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
             "Microsoft.VisualStudio.LiveShare": {
               "target": "Package",
               "version": "[1.1.57, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.2.4, )"
             },
             "SoapCore": {
               "target": "Package",
@@ -85,7 +113,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Users\\karin\\.dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
