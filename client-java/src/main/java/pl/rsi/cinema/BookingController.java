@@ -214,17 +214,18 @@ public class BookingController {
     }
 
     // Helper to show movie by showId using GetMovieId
-    public void showMovieByShowId(int showId) {
-        if (showId <= 0) {
-            showAlert("Błąd", "Nieprawidłowy identyfikator seansu: " + showId);
+    public void showMovieByShowId(int filmshowId) {
+        if (filmshowId <= 0) {
+            showAlert("Błąd", "Nieprawidłowy identyfikator seansu: " + filmshowId);
             return;
         }
-        int movieId = serverService.getMovieId(showId);
+        int movieId = serverService.getMovieId(filmshowId);
         if (movieId > 0) {
             loadMovieDetails(movieId);
         } else {
             showAlert("Błąd",
-                    "Nie udało się pobrać filmu dla seansu: " + showId + " (błąd serwera lub nieprawidłowy showId)");
+                    "Nie udało się pobrać filmu dla seansu: " + filmshowId
+                            + " (błąd serwera lub nieprawidłowy showId)");
         }
     }
 
@@ -364,10 +365,10 @@ public class BookingController {
         if (dateTime == null)
             return "";
 
-        String date = extractDateString(dateTime); // 2025-04-28
+        String date = extractDateString(dateTime);
 
         String[] parts = date.split("-");
-        return parts[2] + "." + parts[1]; // 28.04
+        return parts[2] + "." + parts[1];
     }
 
     public void loadMovieDetails(int movieId) {
@@ -414,14 +415,11 @@ public class BookingController {
                 return false;
 
             // 🔥 normalizacja formatu z .NET
-            datetime = datetime.replace("Z", ""); // usuń Z (UTC)
-            datetime = datetime.split("\\.")[0]; // usuń milisekundy
-            datetime = datetime.replace(" ", "T"); // jeśli jest spacja
+            datetime = datetime.replace("Z", "");
+            datetime = datetime.split("\\.")[0];
+            datetime = datetime.replace(" ", "T");
 
             LocalDateTime showTime = LocalDateTime.parse(datetime);
-
-            System.out.println("CHECK: " + showTime + " NOW: " + LocalDateTime.now());
-
             return showTime.isBefore(LocalDateTime.now());
 
         } catch (Exception e) {
@@ -437,10 +435,8 @@ public class BookingController {
 
         try {
             if (dateTime.contains("T")) {
-                // формат: 2025-06-17T18:00:00
                 return dateTime.split("T")[1].substring(0, 5);
             } else {
-                // формат: 2025-06-17 18:00:00
                 return dateTime.split(" ")[1].substring(0, 5);
             }
         } catch (Exception e) {
@@ -456,6 +452,10 @@ public class BookingController {
 
         List<CinemaServerService.UserReservationDto> reservations = serverService
                 .getUserReservations(currentUser.getUserId());
+
+        reservations = reservations.stream()
+                .sorted((a, b) -> b.getShowDatetime().compareTo(a.getShowDatetime()))
+                .toList();
 
         ReservationsContainer.getChildren().clear();
 
@@ -1004,10 +1004,8 @@ public class BookingController {
         this.selectedTime = time;
         this.editingSeatKeys = new HashSet<>(seatKeys);
 
-        // Always refresh occupancy first
         refreshOccupancy();
 
-        // Clear and re-add all seats to moje miejsca (selectedSeatKeys)
         selectedSeatKeys.clear();
         seatsListContainer.getChildren().clear();
 
@@ -1020,11 +1018,9 @@ public class BookingController {
             addSeatToList(key, row, col);
         }
 
-        // Ensure all seats in editing are in moje miejsca
         for (String key : selectedSeatKeys) {
             seatController.preselectSeatColor(key);
         }
-        // Optionally, show movie for this showId using new backend method
         showMovieByShowId(filmShowId);
     }
 

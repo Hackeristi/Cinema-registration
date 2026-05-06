@@ -90,13 +90,13 @@ public class CinemaServerService {
     // =========================================================
     // 🆕 GetMovieId by showId
     // =========================================================
-    public int getMovieId(int showId) {
+    public int getMovieId(int filmshowId) {
         try {
             String soap = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                     "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                     "<soap:Body>" +
                     "<GetMovieId xmlns=\"http://tempuri.org/\">" +
-                    "<showid>" + showId + "</showid>" +
+                    "<filmshowId>" + filmshowId + "</filmshowId>" +
                     "</GetMovieId>" +
                     "</soap:Body>" +
                     "</soap:Envelope>";
