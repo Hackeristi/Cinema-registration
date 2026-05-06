@@ -166,7 +166,7 @@ public class CinemaService : ICinemaService
 		}
 		
 		var newShow = _context.FilmShows
-			.Include(fs => fs.Movie)
+			/*.Include(fs => fs.Movie)*/
 			.FirstOrDefault(fs => fs.FilmShowId == newshowId);
         
 		if (newShow == null) throw new Exception("Wybrany nowy seans nie istnieje!");
@@ -185,10 +185,18 @@ public class CinemaService : ICinemaService
 		return new ReservationUpdateDto
 		{
 			ReservationId = reservation.ReservationId,
-			MovieId = newShow.MovieId, 
+			/*MovieId = newShow.MovieId, */
 			NewFilmShowId = newshowId,
 			NewSeats = newseats
 		};
+	}
+
+	public int GetMovieId(int filmshowId)
+	{
+		var filmShow = _context.FilmShows
+			.Include(fs=>fs.Movie)
+			.FirstOrDefault(fs => fs.FilmShowId == filmshowId);
+		return filmShow.MovieId;
 	}
 	
 	
