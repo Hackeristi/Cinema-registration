@@ -1,0 +1,111 @@
+/* ================= GLOBAL ================= */
+.root {
+    -fx-background-color: #121212;
+    -fx-font-family: "Franklin Gothic Book";
+}
+
+/* ================= TEXT ================= */
+.label {
+    -fx-text-fill: white;
+}
+
+.title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-text-fill: #aaa;
+    -fx-font-size: 12px;
+}
+
+/* ================= INPUTS ================= */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-border-color: #313131;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+}
+
+/* ================= BUTTONS ================= */
+.button {
+    -fx-background-color: #313131;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #393939;
+}
+
+.button.primary {
+    -fx-background-color: #0078D7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* ================= LINKS ================= */
+.hyperlink {
+    -fx-text-fill: #4fb3ff;
+}
+
+/* ================= TABLE ================= */
+.table-view {
+    -fx-background-color: #181818;
+    -fx-control-inner-background: #181818;
+    -fx-text-background-color: white;
+    -fx-selection-bar: #313131;
+}
+
+.table-view .column-header {
+    -fx-background-color: #252525;
+}
+
+/* ================= PANELS ================= */
+.sidebar {
+    -fx-background-color: #181818;
+}
+
+.card {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #313131;
+    -fx-border-radius: 5;
+}
+
+/* ================= OVERLAY LOGIN ================= */
+.overlay {
+    -fx-background-color: rgba(0,0,0,0.85);
+}
+
+.modal {
+    -fx-background-color: #121212;
+    -fx-padding: 40;
+    -fx-background-radius: 10;
+}
+
+/* ================= SEATS ================= */
+.seat {
+    -fx-background-color: #808080;
+    -fx-background-radius: 4;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+}
+
+.seat.taken {
+    -fx-background-color: #333333;
+}
+
+.seat.selected {
+    -fx-background-color: #FF0000;
+}
+
+String baseStyle =
+    "-fx-background-color: #0078D7;" +
+    "-fx-text-fill: white;" +
+    "-fx-font-size: 10;" +
+    "-fx-background-radius: 4;";
+    
+String disabledStyle =
+    "-fx-background-color: #555555;" +
+    "-fx-text-fill: #cccccc;" +
+    "-fx-font-size: 10;" +
+    "-fx-background-radius: 4;";
