@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {}
+    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Cinema-registration\\REST\\server-dotnet\\Projekt1_server\\Projekt1_Server.csproj": {}
   },
   "projects": {
-    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj": {
+    "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Cinema-registration\\REST\\server-dotnet\\Projekt1_server\\Projekt1_Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
+        "projectUniqueName": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Cinema-registration\\REST\\server-dotnet\\Projekt1_server\\Projekt1_Server.csproj",
         "projectName": "Projekt1_Server",
-        "projectPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\Projekt1_Server.csproj",
+        "projectPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Cinema-registration\\REST\\server-dotnet\\Projekt1_server\\Projekt1_Server.csproj",
         "packagesPath": "C:\\Users\\karin\\.nuget\\packages\\",
-        "outputPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Projekt_Server\\Projekt1_Server\\Projekt1_Server\\obj\\",
+        "outputPath": "C:\\_Moje foldery\\MAGISTERKA\\SEM1\\RSI\\Cinema-registration\\REST\\server-dotnet\\Projekt1_server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

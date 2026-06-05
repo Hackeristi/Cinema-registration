@@ -5,14 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e971f5ce-d14f-4a50-bbed-68abd167201d" name="Changes" comment="Create reservations">
-      <change beforePath="$PROJECT_DIR$/Projekt1_Server/Projekt1_Server/TmbdService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Projekt1_Server/Projekt1_Server/TmbdService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/src/main/java/pl/rsi/cinema/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/src/main/java/pl/rsi/cinema/BookingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/src/main/resources/MainWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/src/main/resources/MainWindow.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/target/classes/MainWindow.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/target/classes/MainWindow.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/target/classes/pl/rsi/cinema/BookingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/target/classes/pl/rsi/cinema/BookingController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/target/classes/pl/rsi/cinema/SeatController.class" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/target/classes/pl/rsi/cinema/SeatController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-java/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/client-java/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/indexLayout.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Actor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/CinemaContext.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/FilmShow.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Movie.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Reservation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Screen.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Seat.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/User.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/Actor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/CinemaContext.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/FilmShow.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/Movie.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/Reservation.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/Screen.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/Seat.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/SOAP/server-dotnet/Projekt1_Server/obj/project.nuget.cache" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +50,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="new-folders" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -47,6 +71,7 @@
     <commands />
     <urls />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="false" />
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -66,7 +91,8 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;reservation-create&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;origin&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -118,6 +144,8 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="false" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnknownFeatures">
     <option featureType="dependencySupport" implementationName="java:junit:junit" />
     <option featureType="dependencySupport" implementationName="executable:docker" />
