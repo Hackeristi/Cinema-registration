@@ -8,6 +8,10 @@ using System.ServiceModel;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<CinemaContext>(options =>
     options.UseSqlServer(connectionString));
 
@@ -35,5 +39,18 @@ using (var scope = app.Services.CreateScope())
     await tmdb.SeedDatabaseAsync();
     await tmdb.GenerateScheduleAsync();
 }
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => 
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Cinema API v1");
+        
+        options.RoutePrefix = string.Empty; 
+    });
+}
+
+app.MapControllers();
 
 app.Run();
