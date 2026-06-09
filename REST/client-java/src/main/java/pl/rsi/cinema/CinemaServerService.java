@@ -18,7 +18,7 @@ import java.util.List;
 
 public class CinemaServerService {
 
-    private static final String SERVER_URL = "http://localhost:5000/api";
+    private static final String SERVER_URL = "https://nearest-crouch-liver.ngrok-free.dev/api";
 
     private static CinemaServerService instance;
 
@@ -72,7 +72,7 @@ public class CinemaServerService {
 
     public MovieDetails getMovieDetails(int movieId) {
         try {
-            String body = sendJsonGet("/movies/" + movieId);
+            String body = sendJsonGetWithRetry("/movies/" + movieId);
             JsonObject movie = JsonParser.parseString(body).getAsJsonObject();
 
             String actors = "";
@@ -96,36 +96,47 @@ public class CinemaServerService {
                     actors,
                     getInt(movie, "duration"),
                     String.valueOf(getInt(movie, "premiere")),
-                    getString(movie, "poster")
-            );
+                    getString(movie, "poster"));
         } catch (Exception e) {
             throw new RuntimeException("getMovieDetails failed: " + e.getMessage(), e);
         }
     }
 
     public byte[] getMoviePoster(int movieId) {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(buildUrl("/movies/" + movieId + "/poster")))
-                    .header("Accept", "image/jpeg")
-                    .GET()
-                    .build();
-
-            HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new RuntimeException("HTTP error: " + response.statusCode());
+        int delayMs = 1000;
+        for (int attempt = 0; attempt < 4; attempt++) {
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(buildUrl("/movies/" + movieId + "/poster")))
+                        .header("Accept", "image/jpeg")
+                        .header("ngrok-skip-browser-warning", "true")
+                        .GET()
+                        .build();
+                HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+                if (response.statusCode() == 429 && attempt < 3) {
+                    Thread.sleep(delayMs);
+                    delayMs *= 2;
+                    continue;
+                }
+                if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                    throw new RuntimeException("getMoviePoster failed: HTTP error: " + response.statusCode());
+                }
+                lastPosterWasMtom = false;
+                return response.body();
+            } catch (RuntimeException e) {
+                if (attempt == 3)
+                    throw e;
+            } catch (Exception e) {
+                throw new RuntimeException("getMoviePoster failed: " + e.getMessage(), e);
             }
-            lastPosterWasMtom = false;
-            return response.body();
-        } catch (Exception e) {
-            throw new RuntimeException("getMoviePoster failed: " + e.getMessage(), e);
         }
+        throw new RuntimeException("getMoviePoster failed: max retries exceeded");
     }
 
     public int getMovieId(int filmShowId) {
         try {
             for (MovieFromServer movie : getMovies()) {
-                if (movie.getFilmShowId() == filmShowId) {
+                if (movie.getShowId() == filmShowId) {
                     return movie.getMovieId();
                 }
             }
@@ -146,14 +157,14 @@ public class CinemaServerService {
         private final String posterBase64;
 
         public MovieDetails(String title, String description, String director,
-                            String actors, int duration,
-                            String premiere, String posterBase64) {
+                String actors, int duration,
+                String premiere, String posterBase64) {
             this(title, description, director, actors, "", duration, premiere, posterBase64);
         }
 
         public MovieDetails(String title, String description, String director,
-                            String actors, String genre, int duration,
-                            String premiere, String posterBase64) {
+                String actors, String genre, int duration,
+                String premiere, String posterBase64) {
             this.title = title;
             this.description = description;
             this.director = director;
@@ -200,8 +211,9 @@ public class CinemaServerService {
     public List<ShowtimeDto> getShowtimes(int movieId, String date) {
         try {
             String formatted = normalizeDateForRest(date);
-            String path = "/movies/" + movieId + "/showtimes?date=" + URLEncoder.encode(formatted, StandardCharsets.UTF_8);
-            String body = sendJsonGet(path);
+            String path = "/movies/" + movieId + "/showtimes?date="
+                    + URLEncoder.encode(formatted, StandardCharsets.UTF_8);
+            String body = sendJsonGetWithRetry(path);
             JsonArray array = JsonParser.parseString(body).getAsJsonArray();
 
             List<ShowtimeDto> list = new ArrayList<>();
@@ -220,7 +232,7 @@ public class CinemaServerService {
 
     public List<SeatDto> getSeats(int filmShowId) {
         try {
-            String body = sendJsonGet("/showtimes/" + filmShowId + "/seats");
+            String body = sendJsonGetWithRetry("/showtimes/" + filmShowId + "/seats");
             JsonArray array = JsonParser.parseString(body).getAsJsonArray();
 
             List<SeatDto> list = new ArrayList<>();
@@ -241,8 +253,11 @@ public class CinemaServerService {
     public UserLoginDto login(String email, String password) {
         try {
             JsonObject payload = new JsonObject();
+            payload.addProperty("userId", 0);
+            payload.addProperty("userName", "");
             payload.addProperty("email", email);
             payload.addProperty("password", password);
+            payload.addProperty("errorMessage", "");
 
             String body = sendJsonPost("/auth/login", payload.toString());
             JsonObject object = JsonParser.parseString(body).getAsJsonObject();
@@ -250,15 +265,14 @@ public class CinemaServerService {
                     getInt(object, "userId"),
                     getString(object, "email"),
                     getString(object, "userName"),
-                    getString(object, "errorMessage")
-            );
+                    getString(object, "errorMessage"));
         } catch (Exception e) {
             throw new RuntimeException("login failed: " + e.getMessage(), e);
         }
     }
 
     public RegisterResultDto register(String name, String surname, String email, String password,
-                                      String confirmPassword) {
+            String confirmPassword) {
         try {
             JsonObject payload = new JsonObject();
             payload.addProperty("name", name);
@@ -266,6 +280,7 @@ public class CinemaServerService {
             payload.addProperty("email", email);
             payload.addProperty("password", password);
             payload.addProperty("confirmPassword", confirmPassword);
+            payload.addProperty("errorMessage", "");
 
             String body = sendJsonPost("/auth/register", payload.toString());
             JsonObject object = JsonParser.parseString(body).getAsJsonObject();
@@ -274,8 +289,7 @@ public class CinemaServerService {
                     getString(object, "email"),
                     getString(object, "name"),
                     getString(object, "surname"),
-                    getString(object, "errorMessage")
-            );
+                    getString(object, "errorMessage"));
         } catch (Exception e) {
             throw new RuntimeException("register failed: " + e.getMessage(), e);
         }
@@ -283,7 +297,7 @@ public class CinemaServerService {
 
     public List<UserReservationDto> getUserReservations(int userId) {
         try {
-            String body = sendJsonGet("/users/" + userId + "/reservations");
+            String body = sendJsonGetWithRetry("/users/" + userId + "/reservations");
             JsonArray array = JsonParser.parseString(body).getAsJsonArray();
 
             List<UserReservationDto> list = new ArrayList<>();
@@ -306,7 +320,8 @@ public class CinemaServerService {
                     }
                 }
 
-                list.add(new UserReservationDto(reservationId, title, showDatetime, filmShowId, seatsBuilder.toString()));
+                list.add(new UserReservationDto(reservationId, title, showDatetime, filmShowId,
+                        seatsBuilder.toString()));
             }
             return list;
         } catch (Exception e) {
@@ -367,6 +382,7 @@ public class CinemaServerService {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(buildUrl("/reservations/" + reservationId + "/pdf")))
+                    .header("ngrok-skip-browser-warning", "true")
                     .GET()
                     .build();
             HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
@@ -387,7 +403,7 @@ public class CinemaServerService {
         private final String seats;
 
         public UserReservationDto(int reservationId, String title,
-                                  String showDatetime, int filmShowId, String seats) {
+                String showDatetime, int filmShowId, String seats) {
             this.reservationId = reservationId;
             this.title = title;
             this.showDatetime = showDatetime;
@@ -438,9 +454,11 @@ public class CinemaServerService {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(buildUrl(path)))
                 .header("Accept", "application/json")
+                .header("ngrok-skip-browser-warning", "true")
                 .GET()
                 .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response = httpClient.send(request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException("REST error: " + response.statusCode() + " " + response.body());
         }
@@ -452,9 +470,11 @@ public class CinemaServerService {
                 .uri(URI.create(buildUrl(path)))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
+                .header("ngrok-skip-browser-warning", "true")
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response = httpClient.send(request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException("REST error: " + response.statusCode() + " " + response.body());
         }
@@ -466,9 +486,11 @@ public class CinemaServerService {
                 .uri(URI.create(buildUrl(path)))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
+                .header("ngrok-skip-browser-warning", "true")
                 .PUT(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
                 .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response = httpClient.send(request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException("REST error: " + response.statusCode() + " " + response.body());
         }
@@ -479,9 +501,11 @@ public class CinemaServerService {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(buildUrl(path)))
                 .header("Accept", "application/json")
+                .header("ngrok-skip-browser-warning", "true")
                 .DELETE()
                 .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response = httpClient.send(request,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw new RuntimeException("REST error: " + response.statusCode() + " " + response.body());
         }
@@ -667,5 +691,23 @@ public class CinemaServerService {
         public boolean isSuccess() {
             return errorMessage == null || errorMessage.isBlank();
         }
+    }
+
+    private String sendJsonGetWithRetry(String path) throws Exception {
+        int delayMs = 3000;
+        for (int attempt = 0; attempt < 4; attempt++) {
+            try {
+                return sendJsonGet(path);
+            } catch (RuntimeException e) {
+                boolean is429 = e.getMessage() != null && e.getMessage().contains("429");
+                if (is429 && attempt < 3) {
+                    Thread.sleep(delayMs);
+                    delayMs *= 2;
+                } else {
+                    throw e;
+                }
+            }
+        }
+        throw new RuntimeException("Max retries exceeded for: " + path);
     }
 }

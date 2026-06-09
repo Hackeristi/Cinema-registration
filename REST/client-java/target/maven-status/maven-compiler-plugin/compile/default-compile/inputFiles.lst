@@ -1,4 +1,11 @@
-C:\Users\Hackie\Documents\Projekt-RSI-SOAP\client-java\src\main\java\pl\rsi\cinema\LoggingHandler.java
-C:\Users\Hackie\Documents\Projekt-RSI-SOAP\client-java\src\main\java\pl\rsi\cinema\CinemaController.java
-C:\Users\Hackie\Documents\Projekt-RSI-SOAP\client-java\src\main\java\pl\rsi\cinema\MainWindow.java
-C:\Users\Hackie\Documents\Projekt-RSI-SOAP\client-java\src\main\java\pl\rsi\cinema\Movie.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\SeatController.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\BookingController.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\MainWindow.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\LoginController.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\Movie.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\CinemaServerService.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\UserService.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\LoggingHandler.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\RegisterController.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\User.java
+C:\Users\Hackie\Documents\RSI\Cinema-registration\REST\client-java\src\main\java\pl\rsi\cinema\dto\MovieFromServer.java
