@@ -432,4 +432,27 @@ public class CinemaService : ICinemaService
 		return posterBytes;
 	}
 
+	public MovieDto GetMovieDetailsFromReservation(int reservationId)
+    {
+    	var show = _context.Reservations
+        	.Where(r => r.ReservationId == reservationId)
+        	.Select(r => r.FilmShow)
+        	.FirstOrDefault();
+
+    	if (show == null || show.Movie == null)
+    	{
+        	throw new Exception($"Nie znaleziono szczegółów filmu dla rezerwacji o ID {reservationId}");
+    	}
+	
+    	var movieDto = new MovieDto
+    	{
+			MovieId = show.Movie.MovieId, 
+        	ShowId = show.FilmShowId,
+        	Title = show.Movie.Title,
+        	Genre = show.Movie.Genre,
+        	ShowDatetime = show.ShowDatetime
+    	};
+
+   		return movieDto;
+	}
 }

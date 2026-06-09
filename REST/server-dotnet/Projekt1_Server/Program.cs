@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Projekt1_Server;
 using Projekt1_Server.Models;
-using SoapCore;
-using System.ServiceModel;
-
+using Projekt1_Server.Hubs; 
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -17,23 +19,30 @@ builder.Services.AddDbContext<CinemaContext>(options =>
 
 builder.Services.AddScoped<ICinemaService, CinemaService>();
 
-builder.Services.AddSoapCore();
+builder.Services.AddSignalR();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("DemoLimit", opt =>
+    {
+        opt.PermitLimit = 5; 
+        opt.Window = TimeSpan.FromSeconds(10); 
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0; 
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 
 var app = builder.Build();
-app.UseRouting();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.UseSoapEndpoint<ICinemaService>("/CinemaService.asmx", new SoapEncoderOptions
-    {
-        MessageVersion = System.ServiceModel.Channels.MessageVersion.Soap11
-    }, SoapSerializer.DataContractSerializer);
-});
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<CinemaContext>();
+    
+    Console.WriteLine("Tworzenie struktury bazy danych...");
+    context.Database.EnsureCreated();
+    Console.WriteLine("Baza gotowa!");
     
     var tmdb = new TmdbService(context, new HttpClient());
     await tmdb.SeedDatabaseAsync();
@@ -46,11 +55,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => 
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Cinema API v1");
-        
         options.RoutePrefix = string.Empty; 
     });
 }
 
-app.MapControllers();
+app.UseRateLimiter();
+app.MapControllers().RequireRateLimiting("DemoLimit");
+
+app.MapHub<CinemaHub>("/cinema-ws");
 
 app.Run();
