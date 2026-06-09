@@ -6,6 +6,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionBuilder;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -29,11 +31,44 @@ public class CinemaServerService {
         return instance;
     }
 
+    private HubConnection hubConnection;
+
+    public CinemaServerService() {
+        try {
+            hubConnection = HubConnectionBuilder
+                    .create("https://nearest-crouch-liver.ngrok-free.dev/cinema-ws")
+                    .build();
+
+            hubConnection.on("ReceiveNotification",
+                    (message) -> {
+                        System.out.println("Nowe powiadomienie: " + message);
+                    },
+                    String.class);
+
+            hubConnection.start().blockingAwait();
+
+            System.out.println("SignalR connected");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private boolean lastPosterWasMtom = false;
 
-    public MovieDetails getMovieDetailsFromReservation(int reservationId) {
-        return null;
+    public MovieFromServer getMovieFromReservation(int reservationId) {
+        try {
+            String body = sendJsonGetWithRetry("/reservations/" + reservationId + "/movie");
+            JsonObject obj = JsonParser.parseString(body).getAsJsonObject();
+            return new MovieFromServer(
+                    getInt(obj, "showId"),
+                    getInt(obj, "movieId"),
+                    getString(obj, "title"),
+                    getString(obj, "genre"),
+                    getString(obj, "showDatetime"));
+        } catch (Exception e) {
+            throw new RuntimeException("getMovieFromReservation failed: " + e.getMessage(), e);
+        }
     }
 
     public boolean wasLastPosterMtom() {
@@ -104,6 +139,8 @@ public class CinemaServerService {
 
     public byte[] getMoviePoster(int movieId) {
         int delayMs = 1000;
+        System.out.println("POSTER REQUEST: " + movieId);
+
         for (int attempt = 0; attempt < 4; attempt++) {
             try {
                 HttpRequest request = HttpRequest.newBuilder()
@@ -113,6 +150,8 @@ public class CinemaServerService {
                         .GET()
                         .build();
                 HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+                System.out.println("POSTER STATUS: " + response.statusCode());
                 if (response.statusCode() == 429 && attempt < 3) {
                     Thread.sleep(delayMs);
                     delayMs *= 2;
@@ -259,7 +298,7 @@ public class CinemaServerService {
             payload.addProperty("password", password);
             payload.addProperty("errorMessage", "");
 
-            String body = sendJsonPost("/auth/login", payload.toString());
+            String body = sendJsonPostWithRetry("/auth/login", payload.toString());
             JsonObject object = JsonParser.parseString(body).getAsJsonObject();
             return new UserLoginDto(
                     getInt(object, "userId"),
@@ -282,7 +321,7 @@ public class CinemaServerService {
             payload.addProperty("confirmPassword", confirmPassword);
             payload.addProperty("errorMessage", "");
 
-            String body = sendJsonPost("/auth/register", payload.toString());
+            String body = sendJsonPostWithRetry("/auth/register", payload.toString());
             JsonObject object = JsonParser.parseString(body).getAsJsonObject();
             return new RegisterResultDto(
                     getInt(object, "userId"),
@@ -339,7 +378,7 @@ public class CinemaServerService {
             }
             payload.add("selectedSeats", seatsArray);
 
-            String body = sendJsonPost("/users/" + userId + "/reservations", payload.toString());
+            String body = sendJsonPostWithRetry("/users/" + userId + "/reservations", payload.toString());
             JsonObject object = JsonParser.parseString(body).getAsJsonObject();
             int reservationId = getInt(object, "reservationId");
             List<String> seatKeys = new ArrayList<>();
@@ -371,7 +410,7 @@ public class CinemaServerService {
             }
             payload.add("newSeats", seatsArray);
 
-            sendJsonPut("/users/" + userId + "/reservations/" + reservationId, payload.toString());
+            sendJsonPutWithRetry("/users/" + userId + "/reservations/" + reservationId, payload.toString());
             return true;
         } catch (Exception e) {
             throw new RuntimeException("updateReservation failed: " + e.getMessage(), e);
@@ -693,6 +732,24 @@ public class CinemaServerService {
         }
     }
 
+    private String sendJsonPostWithRetry(String path, String body) throws Exception {
+        int delayMs = 3000;
+        for (int attempt = 0; attempt < 4; attempt++) {
+            try {
+                return sendJsonPost(path, body);
+            } catch (RuntimeException e) {
+                boolean is429 = e.getMessage() != null && e.getMessage().contains("429");
+                if (is429 && attempt < 3) {
+                    Thread.sleep(delayMs);
+                    delayMs *= 2;
+                } else {
+                    throw e;
+                }
+            }
+        }
+        throw new RuntimeException("Max retries exceeded for POST: " + path);
+    }
+
     private String sendJsonGetWithRetry(String path) throws Exception {
         int delayMs = 3000;
         for (int attempt = 0; attempt < 4; attempt++) {
@@ -708,6 +765,24 @@ public class CinemaServerService {
                 }
             }
         }
-        throw new RuntimeException("Max retries exceeded for: " + path);
+        throw new RuntimeException("Max retries exceeded for GET: " + path);
+    }
+
+    private String sendJsonPutWithRetry(String path, String body) throws Exception {
+        int delayMs = 3000;
+        for (int attempt = 0; attempt < 4; attempt++) {
+            try {
+                return sendJsonPut(path, body);
+            } catch (RuntimeException e) {
+                boolean is429 = e.getMessage() != null && e.getMessage().contains("429");
+                if (is429 && attempt < 3) {
+                    Thread.sleep(delayMs);
+                    delayMs *= 2;
+                } else {
+                    throw e;
+                }
+            }
+        }
+        throw new RuntimeException("Max retries exceeded for PUT: " + path);
     }
 }

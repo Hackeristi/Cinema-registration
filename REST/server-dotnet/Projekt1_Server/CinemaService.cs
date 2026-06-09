@@ -432,6 +432,7 @@ public class CinemaService : ICinemaService
 		return posterBytes;
 	}
 
+
 	public MovieDto GetMovieDetailsFromReservation(int reservationId)
     {
     	var show = _context.Reservations
