@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e971f5ce-d14f-4a50-bbed-68abd167201d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Hubs/CinemaHub.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/nginx.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaControllers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaControllers.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/ICinemaService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/ICinemaService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/CinemaContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/CinemaContext.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Debug/net8.0/Projekt1_Server.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/Projekt1_Server.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +39,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaControllers.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaControllers.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/CinemaService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/DTOs/MovieDetailsDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/DTOs/MovieDto.cs" root0="SKIP_HIGHLIGHTING" />
@@ -64,7 +52,7 @@
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/DTOs/ShowtimeDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/DTOs/UserLoginDto.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Hubs/CinemaHub.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/ICinemaService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/ICinemaService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/CinemaContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/FilmShow.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/REST/server-dotnet/Projekt1_Server/Models/Movie.cs" root0="SKIP_HIGHLIGHTING" />
@@ -93,30 +81,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;rest__server&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.maddyhome.idea.vim.ui.VimEmulationConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "origin",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "com.maddyhome.idea.vim.ui.VimEmulationConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e971f5ce-d14f-4a50-bbed-68abd167201d" name="Changes" comment="" />

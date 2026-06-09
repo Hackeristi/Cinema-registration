@@ -21,8 +21,21 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=SilneHaslo123!
+    volumes:
+      - ./cinema_db_data:/var/opt/mssql/data
     networks:
-      - back-network 
+      - back-network
+  
+  cinema-db-admin:
+    image: adminer
+    container_name: cinema_db_admin
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - back-network
+    depends_on:
+      - cinema-db
 
   cinema-redis:
     image: redis:alpine

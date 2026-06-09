@@ -41,8 +41,15 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<CinemaContext>();
     
     Console.WriteLine("Tworzenie struktury bazy danych...");
-    context.Database.EnsureCreated();
-    Console.WriteLine("Baza gotowa!");
+    try
+    {
+        context.Database.EnsureCreated();
+        Console.WriteLine("Baza gotowa!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Baza już istnieje (załadowana z wolumenu na dysku). Pracuję dalej!");
+    }
     
     var tmdb = new TmdbService(context, new HttpClient());
     await tmdb.SeedDatabaseAsync();
