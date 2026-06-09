@@ -1,0 +1,52 @@
+version: '3.8' 
+
+services:
+  cinema-api:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: cinema_backend
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DB_CONNECTION_STRING=Server=cinema-db;Database=CinemaDb;User=sa;Password=SilneHaslo123!;TrustServerCertificate=True;
+    networks:
+      - front-network 
+      - back-network  
+    depends_on:
+      - cinema-db 
+
+  cinema-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: cinema_database
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SilneHaslo123!
+    networks:
+      - back-network 
+
+  cinema-redis:
+    image: redis:alpine
+    container_name: cinema_redis
+    networks:
+      - back-network 
+
+
+  cinema-proxy:
+    image: nginx:alpine
+    container_name: cinema_nginx
+    ports:
+      - "80:80"   
+      - "443:443" 
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro 
+      - ./certs:/etc/nginx/certs 
+    networks:
+      - front-network 
+    depends_on:
+      - cinema-api
+
+networks:
+  front-network:
+    driver: bridge
+  back-network:
+    driver: bridge

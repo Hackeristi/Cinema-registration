@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Projekt1_Server.DTOs;
+using Microsoft.AspNetCore.SignalR;
+using Projekt1_Server.Hubs;
 
 namespace Projekt1_Server;
 
@@ -8,10 +10,12 @@ namespace Projekt1_Server;
 public class CinemaController : ControllerBase
 {
     private readonly ICinemaService _cinemaService;
+	private readonly IHubContext<CinemaHub> _hubContext;	
     
-    public CinemaController(ICinemaService cinemaService)
+    public CinemaController(ICinemaService cinemaService, IHubContext<CinemaHub> hubContext)
     {
         _cinemaService = cinemaService;
+		_hubContext = hubContext;
     }
     
 
@@ -82,11 +86,12 @@ public class CinemaController : ControllerBase
     }
     
     [HttpPost("users/{userId}/reservations")]
-    public IActionResult CreateReservation(int userId, [FromBody] ReservationCreateDto dto)
+    public async Task<IActionResult> CreateReservation(int userId, [FromBody] ReservationCreateDto dto)
     {
         try
         {
             var result = _cinemaService.CreateReservation(userId, dto.FilmShowId, dto.SelectedSeats);
+			await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"Użytkownik {userId} właśnie zarezerwował miejsca!");	
             return Ok(result);
         }
         catch (Exception ex)
@@ -162,4 +167,18 @@ public class CinemaController : ControllerBase
         
         return Ok(result);
     }
+
+	[HttpGet("reservations/{reservationId}/movie")]
+	public IActionResult GetMovieDetailsFromReservation(int reservationId)
+	{
+    	try
+    	{
+        	var result = _cinemaService.GetMovieDetailsFromReservation(reservationId); 
+       	 	return Ok(result);
+    	}
+    	catch (Exception ex)
+    	{
+       	 return BadRequest(new { message = ex.Message });
+    	}
+	}
 }
