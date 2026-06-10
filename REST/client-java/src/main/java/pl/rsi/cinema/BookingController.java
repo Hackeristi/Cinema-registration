@@ -463,25 +463,42 @@ public class BookingController {
     }
 
     private boolean isPast(String datetime) {
-        try {
-            if (datetime == null || datetime.isBlank())
-                return false;
+        LocalDateTime showTime = parseDateTimeFlexible(datetime);
+        return showTime != null && showTime.isBefore(LocalDateTime.now());
+    }
 
-            // 🔥 normalizacja formatu z .NET
-            datetime = datetime.replace("Z", ""); // usuń Z (UTC)
-            datetime = datetime.split("\\.")[0]; // usuń milisekundy
-            datetime = datetime.replace(" ", "T"); // jeśli jest spacja
-
-            LocalDateTime showTime = LocalDateTime.parse(datetime);
-
-            System.out.println("CHECK: " + showTime + " NOW: " + LocalDateTime.now());
-
-            return showTime.isBefore(LocalDateTime.now());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    private LocalDateTime parseDateTimeFlexible(String datetime) {
+        if (datetime == null || datetime.isBlank()) {
+            return null;
         }
+
+        try {
+            String normalized = datetime.trim().replace("Z", "");
+
+            if (normalized.contains("|") && normalized.contains("Godz:")) {
+                String[] parts = normalized.split("\\|");
+                if (parts.length >= 3) {
+                    normalized = parts[1].trim() + "T" + parts[2].replace("Godz:", "").trim();
+                }
+            } else if (normalized.contains("|")) {
+                String[] parts = normalized.split("\\|");
+                if (parts.length >= 2) {
+                    normalized = parts[1].trim();
+                }
+            }
+
+            normalized = normalized.replace(" ", "T");
+
+            if (normalized.contains(".")) {
+                normalized = normalized.split("\\.")[0];
+            }
+
+            return LocalDateTime.parse(normalized);
+        } catch (Exception ignored) {
+        }
+
+        LocalDate date = parseDateFlexible(datetime);
+        return date == null ? null : date.atStartOfDay();
     }
 
     private String extractTime(String dateTime) {
@@ -511,11 +528,19 @@ public class BookingController {
         List<CinemaServerService.UserReservationDto> reservations = serverService
                 .getUserReservations(currentUser.getUserId());
 
+        reservations.sort(Comparator
+                .comparing((CinemaServerService.UserReservationDto r) -> isPast(r.getShowDatetime()))
+                .thenComparing(r -> {
+                    LocalDateTime dt = parseDateTimeFlexible(r.getShowDatetime());
+                    return dt == null ? LocalDateTime.MAX : dt;
+                }));
+
         ReservationsContainer.getChildren().clear();
 
         for (var r : reservations) {
 
             VBox reservationBox = new VBox(5);
+            reservationBox.setUserData(r.getShowDatetime());
             reservationBox.setStyle(
                     "-fx-border-color: #313131; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #1a1a1a;");
 
@@ -933,7 +958,9 @@ public class BookingController {
                     fullDateTime,
                     selectedMovie));
 
+            reservationBox.setUserData(fullDateTime);
             ReservationsContainer.getChildren().add(reservationBox);
+            sortReservationBoxesInView();
 
             seatController.markSelectedAsOccupied(selectedSeatKeys);
             seatsListContainer.getChildren().clear();
@@ -965,31 +992,69 @@ public class BookingController {
 
     @FXML
     private void handleDeletePastReservations(ActionEvent event) {
-
         ReservationsContainer.getChildren().removeIf(node -> {
-
-            if (!(node instanceof VBox box))
+            if (!(node instanceof VBox box)) {
                 return false;
+            }
+
+            Object data = box.getUserData();
+            if (data instanceof String datetime && isPast(datetime)) {
+                return true;
+            }
 
             try {
                 Label label = (Label) box.getChildren().get(0);
-                String text = label.getText();
-
-                // "Film | 2026-05-04 | Godz: 18:00"
-                String[] parts = text.split("\\|");
-                if (parts.length < 2)
-                    return false;
-
-                String dateStr = parts[1].trim();
-                LocalDate date = parseDateFlexible(dateStr);
-                if (date == null)
-                    return false;
-
-                return date.isBefore(LocalDate.now());
+                return isPast(label.getText());
             } catch (Exception e) {
                 return false;
             }
         });
+    }
+
+    private void sortReservationBoxesInView() {
+        ReservationsContainer.getChildren().sort((left, right) -> {
+            LocalDateTime leftTime = reservationBoxDateTime(left);
+            LocalDateTime rightTime = reservationBoxDateTime(right);
+            boolean leftPast = leftTime != null && leftTime.isBefore(LocalDateTime.now());
+            boolean rightPast = rightTime != null && rightTime.isBefore(LocalDateTime.now());
+
+            int byEditable = Boolean.compare(leftPast, rightPast);
+            if (byEditable != 0) {
+                return byEditable;
+            }
+
+            if (leftTime == null && rightTime == null) {
+                return 0;
+            }
+            if (leftTime == null) {
+                return 1;
+            }
+            if (rightTime == null) {
+                return -1;
+            }
+            return leftTime.compareTo(rightTime);
+        });
+    }
+
+    private LocalDateTime reservationBoxDateTime(javafx.scene.Node node) {
+        if (!(node instanceof VBox box)) {
+            return null;
+        }
+
+        Object data = box.getUserData();
+        if (data instanceof String datetime) {
+            LocalDateTime parsed = parseDateTimeFlexible(datetime);
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+
+        try {
+            Label label = (Label) box.getChildren().get(0);
+            return parseDateTimeFlexible(label.getText());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private LocalDate parseDateFlexible(String dateStr) {
@@ -1077,20 +1142,16 @@ public class BookingController {
             showMovieDetails(movie);
         }
 
-        // Ustaw datę BEZ triggerowania listenera
         String reservationDate = extractDateString(showDatetime);
+
         if (!reservationDate.isBlank() && MovieDate.getItems().contains(reservationDate)) {
-            // tymczasowo wyłącz listener przez flagę editMode (już ustawioną)
-            MovieDate.setValue(reservationDate);
-            // listener wywoła updateAvailableTimes — to wystarczy, NIE wywołujemy ręcznie
-        } else {
-            // data nie zmieniła się, listener nie odpali — wywołaj ręcznie
-            if (movie != null) {
-                updateAvailableTimes(movie);
-            }
+            MovieDate.getSelectionModel().select(reservationDate);
         }
 
-        // Przywróć filmShowId bo btn.fire() w updateAvailableTimes mógł go nadpisać
+        if (movie != null) {
+            updateAvailableTimes(movie);
+        }
+
         this.currentFilmShowId = filmShowId;
 
         // Ustaw salę
