@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
@@ -161,21 +162,9 @@ public class BookingController {
             seatController.initSeatMap(seatGrid);
             try {
                 movies = serverService.getMovies();
-                if (movies != null && !movies.isEmpty()) {
-                    Set<String> uniqueDates = new HashSet<>();
-                    for (var movie : movies) {
-                        String dateTime = movie.getShowDateTime();
-                        if (dateTime != null && dateTime.length() >= 10) {
-                            String date = dateTime.substring(0, 10);
-                            uniqueDates.add(date);
-                        }
-                    }
-                    MovieDate.getItems().addAll(uniqueDates.stream().sorted().toList());
-                } else {
-                    MovieDate.getItems().addAll("27.04.2024", "28.04.2024", "29.04.2024");
-                }
+                populateMovieDateOptions(movies);
             } catch (Exception e) {
-                MovieDate.getItems().addAll("27.04.2024", "28.04.2024", "29.04.2024");
+                MovieDate.getItems().setAll(LocalDate.now().toString());
             }
             if (!MovieDate.getItems().isEmpty()) {
                 MovieDate.getSelectionModel().selectFirst();
@@ -185,6 +174,9 @@ public class BookingController {
             moviesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldMovie, newMovie) -> {
                 if (newMovie != null) {
                     updatePdfButtonState();
+                    if (editMode) {
+                        exitEditMode();
+                    }
                     showMovieDetails(newMovie);
                     String movieDate = extractDateString(newMovie.getShowDateTime());
                     boolean dateChanged = false;
@@ -194,10 +186,6 @@ public class BookingController {
                     }
                     if (!dateChanged) {
                         updateAvailableTimes(newMovie);
-                    }
-                    if (editMode) {
-                        exitEditMode();
-                        return;
                     }
 
                 }
@@ -248,6 +236,10 @@ public class BookingController {
     }
 
     private void updateAvailableTimes(MovieFromServer movie) {
+        System.out.println("=== UPDATE TIMES ===");
+        System.out.println("movieId = " + movie.getMovieId());
+        System.out.println("MovieDate value = " + MovieDate.getValue());
+        System.out.println("editingShowDatetime = " + editingShowDatetime);
 
         currentSelectedTimeButton = null;
         timeButtonsContainer.getChildren().clear();
@@ -259,31 +251,61 @@ public class BookingController {
         List<CinemaServerService.ShowtimeDto> showtimes = serverService.getShowtimes(movie.getMovieId(), date);
 
         if (showtimes == null || showtimes.isEmpty()) {
+            if (editMode && !editingShowDatetime.isBlank() && currentFilmShowId != -1) {
+                filmShowToMovieMap.put(currentFilmShowId, movie);
+                Button fallbackBtn = new Button(extractTime(editingShowDatetime));
+                fallbackBtn.setPrefWidth(70);
+                fallbackBtn.setStyle("-fx-background-color: #0078D7; -fx-border-color: #0078D7; -fx-border-radius: 5;");
+                fallbackBtn.setTextFill(javafx.scene.paint.Color.WHITE);
+                fallbackBtn.setFont(javafx.scene.text.Font.font("Franklin Gothic Book", 14));
+                fallbackBtn.setUserData(new CinemaServerService.ShowtimeDto(currentFilmShowId, editingShowDatetime, 0));
+                fallbackBtn.setOnAction(this::handleTimeSelection);
+                timeButtonsContainer.getChildren().add(fallbackBtn);
+                currentSelectedTimeButton = fallbackBtn;
+                fallbackBtn.fire();
+                return;
+            }
             System.out.println("NO SHOWTIMES FROM SERVER");
             return;
         }
 
         Button firstBtn = null;
+        Button targetBtn = null;
+        String targetTime = editMode && !editingShowDatetime.isBlank()
+                ? extractTime(editingShowDatetime)
+                : null;
+
+        System.out.println("targetTime = " + targetTime);
+
         for (CinemaServerService.ShowtimeDto s : showtimes) {
-            if (movie == null && activeMovie != null) {
-                movie = activeMovie;
-            }
             filmShowToMovieMap.put(s.getFilmShowId(), movie);
-            Button btn = new Button(s.getShowDatetime().split("T")[1].substring(0, 5));
+
+            String btnTime = s.getShowDatetime().split("T")[1].substring(0, 5);
+            Button btn = new Button(btnTime);
             btn.setPrefWidth(70);
             btn.setStyle("-fx-background-color: #121212; -fx-border-color: #313131; -fx-border-radius: 5;");
             btn.setTextFill(javafx.scene.paint.Color.WHITE);
             btn.setFont(javafx.scene.text.Font.font("Franklin Gothic Book", 14));
             btn.setUserData(s);
             btn.setOnAction(this::handleTimeSelection);
-
             timeButtonsContainer.getChildren().add(btn);
+
+            System.out.println("  button: '" + btnTime + "' filmShowId=" + s.getFilmShowId());
+
             if (firstBtn == null)
                 firstBtn = btn;
+
+            if (targetTime != null && targetTime.equals(btnTime) && s.getFilmShowId() == currentFilmShowId) {
+                targetBtn = btn;
+            }
         }
 
-        if (firstBtn != null)
+        if (targetBtn != null) {
+            System.out.println("Firing target button: " + targetBtn.getText());
+            targetBtn.fire();
+        } else if (firstBtn != null && !editMode) {
             firstBtn.fire();
+        }
     }
 
     private void setupMovies() {
@@ -293,6 +315,58 @@ public class BookingController {
         genreCol.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGenre()));
 
         dateCol.setCellValueFactory(data -> new SimpleStringProperty(formatDate(data.getValue().getShowDateTime())));
+    }
+
+    private void populateMovieDateOptions(List<MovieFromServer> movieList) {
+        MovieDate.getItems().clear();
+
+        List<String> futureDates = filterFutureDates(movieList == null
+                ? List.of()
+                : movieList.stream().map(MovieFromServer::getShowDateTime).toList());
+
+        if (futureDates.isEmpty()) {
+            futureDates.add(LocalDate.now().toString());
+        }
+
+        MovieDate.getItems().setAll(futureDates);
+    }
+
+    static List<String> filterFutureDates(List<String> rawDates) {
+        LocalDate today = LocalDate.now();
+        return rawDates.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(date -> !date.isBlank())
+                .map(BookingController::parseDateValue)
+                .filter(Objects::nonNull)
+                .filter(date -> !date.isBefore(today))
+                .map(LocalDate::toString)
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    private static LocalDate parseDateValue(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        String trimmed = value.trim();
+        try {
+            return LocalDate.parse(trimmed);
+        } catch (Exception ignored) {
+        }
+
+        try {
+            return LocalDate.parse(trimmed, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception ignored) {
+        }
+
+        if (trimmed.length() >= 10) {
+            return parseDateValue(trimmed.substring(0, 10));
+        }
+
+        return null;
     }
 
     private List<MovieFromServer> filterAndSort(List<MovieFromServer> list) {
@@ -343,8 +417,13 @@ public class BookingController {
 
     public void loadMovieDetails(int movieId) {
         try {
-            CinemaServerService.MovieDetails movie = serverService.getMovieDetails(movieId);
+            long start = System.currentTimeMillis();
 
+            CinemaServerService.MovieDetails movie = serverService.getMovieDetails(movieId);
+            System.out.println(
+                    "getMovieDetails took "
+                            + (System.currentTimeMillis() - start)
+                            + " ms");
             if (movie == null)
                 return;
 
@@ -362,6 +441,10 @@ public class BookingController {
 
             // Poster via MTOM
             byte[] posterBytes = serverService.getMoviePoster(movieId);
+            System.out.println(
+                    "getMoviePoster took "
+                            + (System.currentTimeMillis() - start)
+                            + " ms");
             if (posterBytes != null && posterBytes.length > 0) {
                 coverImage.setImage(new Image(new ByteArrayInputStream(posterBytes)));
             }
@@ -380,25 +463,42 @@ public class BookingController {
     }
 
     private boolean isPast(String datetime) {
-        try {
-            if (datetime == null || datetime.isBlank())
-                return false;
+        LocalDateTime showTime = parseDateTimeFlexible(datetime);
+        return showTime != null && showTime.isBefore(LocalDateTime.now());
+    }
 
-            // 🔥 normalizacja formatu z .NET
-            datetime = datetime.replace("Z", ""); // usuń Z (UTC)
-            datetime = datetime.split("\\.")[0]; // usuń milisekundy
-            datetime = datetime.replace(" ", "T"); // jeśli jest spacja
-
-            LocalDateTime showTime = LocalDateTime.parse(datetime);
-
-            System.out.println("CHECK: " + showTime + " NOW: " + LocalDateTime.now());
-
-            return showTime.isBefore(LocalDateTime.now());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    private LocalDateTime parseDateTimeFlexible(String datetime) {
+        if (datetime == null || datetime.isBlank()) {
+            return null;
         }
+
+        try {
+            String normalized = datetime.trim().replace("Z", "");
+
+            if (normalized.contains("|") && normalized.contains("Godz:")) {
+                String[] parts = normalized.split("\\|");
+                if (parts.length >= 3) {
+                    normalized = parts[1].trim() + "T" + parts[2].replace("Godz:", "").trim();
+                }
+            } else if (normalized.contains("|")) {
+                String[] parts = normalized.split("\\|");
+                if (parts.length >= 2) {
+                    normalized = parts[1].trim();
+                }
+            }
+
+            normalized = normalized.replace(" ", "T");
+
+            if (normalized.contains(".")) {
+                normalized = normalized.split("\\.")[0];
+            }
+
+            return LocalDateTime.parse(normalized);
+        } catch (Exception ignored) {
+        }
+
+        LocalDate date = parseDateFlexible(datetime);
+        return date == null ? null : date.atStartOfDay();
     }
 
     private String extractTime(String dateTime) {
@@ -428,11 +528,19 @@ public class BookingController {
         List<CinemaServerService.UserReservationDto> reservations = serverService
                 .getUserReservations(currentUser.getUserId());
 
+        reservations.sort(Comparator
+                .comparing((CinemaServerService.UserReservationDto r) -> isPast(r.getShowDatetime()))
+                .thenComparing(r -> {
+                    LocalDateTime dt = parseDateTimeFlexible(r.getShowDatetime());
+                    return dt == null ? LocalDateTime.MAX : dt;
+                }));
+
         ReservationsContainer.getChildren().clear();
 
         for (var r : reservations) {
 
             VBox reservationBox = new VBox(5);
+            reservationBox.setUserData(r.getShowDatetime());
             reservationBox.setStyle(
                     "-fx-border-color: #313131; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #1a1a1a;");
 
@@ -684,8 +792,12 @@ public class BookingController {
             return;
 
         seatController.resetAllSeatsToFree();
-        seatsListContainer.getChildren().clear();
-        selectedSeatKeys.clear();
+
+        if (!editMode) {
+            seatsListContainer.getChildren().clear();
+            selectedSeatKeys.clear();
+        }
+
         seatIdMap.clear();
 
         List<CinemaServerService.SeatDto> seats = serverService.getSeats(currentFilmShowId);
@@ -706,6 +818,12 @@ public class BookingController {
         }
 
         seatController.markOccupiedOnGrid(occupied);
+
+        if (editMode) {
+            for (String key : selectedSeatKeys) {
+                seatController.preselectSeatColor(key);
+            }
+        }
     }
 
     @FXML
@@ -754,12 +872,13 @@ public class BookingController {
             exitEditMode();
             return;
         } else {
-            CinemaServerService service = new CinemaServerService();
-            ReservationCreateResultDto result = service.createReservation(
+            ReservationCreateResultDto result = serverService.createReservation(
                     currentUser.getUserId(),
                     currentFilmShowId,
                     seatIds);
-
+            System.out.println("createReservation: userId=" + currentUser.getUserId()
+                    + " filmShowId=" + currentFilmShowId
+                    + " seatIds=" + seatIds);
             if (result != null && result.getReservationId() > 0) {
                 // Reservation was successfully created
                 reservationId = result.getReservationId();
@@ -839,7 +958,9 @@ public class BookingController {
                     fullDateTime,
                     selectedMovie));
 
+            reservationBox.setUserData(fullDateTime);
             ReservationsContainer.getChildren().add(reservationBox);
+            sortReservationBoxesInView();
 
             seatController.markSelectedAsOccupied(selectedSeatKeys);
             seatsListContainer.getChildren().clear();
@@ -854,6 +975,10 @@ public class BookingController {
     private void exitEditMode() {
         editMode = false;
         editingReservationId = -1;
+        editingShowDatetime = "";
+        selectedTime = "";
+        currentFilmShowId = -1;
+        currentSelectedTimeButton = null;
 
         Platform.runLater(() -> {
             confirmReservationButton.setText("Potwierdź rezerwację");
@@ -862,35 +987,74 @@ public class BookingController {
         selectedSeatKeys.clear();
         editingSeatKeys.clear();
         seatsListContainer.getChildren().clear();
+        timeButtonsContainer.getChildren().clear();
     }
 
     @FXML
     private void handleDeletePastReservations(ActionEvent event) {
-
         ReservationsContainer.getChildren().removeIf(node -> {
-
-            if (!(node instanceof VBox box))
+            if (!(node instanceof VBox box)) {
                 return false;
+            }
+
+            Object data = box.getUserData();
+            if (data instanceof String datetime && isPast(datetime)) {
+                return true;
+            }
 
             try {
                 Label label = (Label) box.getChildren().get(0);
-                String text = label.getText();
-
-                // "Film | 2026-05-04 | Godz: 18:00"
-                String[] parts = text.split("\\|");
-                if (parts.length < 2)
-                    return false;
-
-                String dateStr = parts[1].trim();
-                LocalDate date = parseDateFlexible(dateStr);
-                if (date == null)
-                    return false;
-
-                return date.isBefore(LocalDate.now());
+                return isPast(label.getText());
             } catch (Exception e) {
                 return false;
             }
         });
+    }
+
+    private void sortReservationBoxesInView() {
+        ReservationsContainer.getChildren().sort((left, right) -> {
+            LocalDateTime leftTime = reservationBoxDateTime(left);
+            LocalDateTime rightTime = reservationBoxDateTime(right);
+            boolean leftPast = leftTime != null && leftTime.isBefore(LocalDateTime.now());
+            boolean rightPast = rightTime != null && rightTime.isBefore(LocalDateTime.now());
+
+            int byEditable = Boolean.compare(leftPast, rightPast);
+            if (byEditable != 0) {
+                return byEditable;
+            }
+
+            if (leftTime == null && rightTime == null) {
+                return 0;
+            }
+            if (leftTime == null) {
+                return 1;
+            }
+            if (rightTime == null) {
+                return -1;
+            }
+            return leftTime.compareTo(rightTime);
+        });
+    }
+
+    private LocalDateTime reservationBoxDateTime(javafx.scene.Node node) {
+        if (!(node instanceof VBox box)) {
+            return null;
+        }
+
+        Object data = box.getUserData();
+        if (data instanceof String datetime) {
+            LocalDateTime parsed = parseDateTimeFlexible(datetime);
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+
+        try {
+            Label label = (Label) box.getChildren().get(0);
+            return parseDateTimeFlexible(label.getText());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private LocalDate parseDateFlexible(String dateStr) {
@@ -954,30 +1118,55 @@ public class BookingController {
 
         this.editMode = true;
         this.editingReservationId = reservationId;
-
-        // zmiana tekstu przycisku
-        Platform.runLater(() -> {
-            confirmReservationButton.setText("Zapisz zmiany");
-        });
         this.currentFilmShowId = filmShowId;
         this.selectedTime = time;
         this.editingSeatKeys = new HashSet<>(seatKeys);
+        this.editingShowDatetime = showDatetime;
+
+        Platform.runLater(() -> confirmReservationButton.setText("Zapisz zmiany"));
 
         box.setOpacity(0.5);
-
-        // 🔥 KLUCZOWE: fallback jeśli movie == null
         if (movie == null) {
-            movie = filmShowToMovieMap.get(filmShowId);
+            try {
+                movie = serverService.getMovieFromReservation(reservationId);
+                if (movie != null) {
+                    filmShowToMovieMap.put(filmShowId, movie);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (movie != null) {
             activeMovie = movie;
             showMovieDetails(movie);
-            updateAvailableTimes(movie);
-        } else {
-            System.out.println("❌ Nadal brak filmu dla showId: " + filmShowId);
         }
 
+        String reservationDate = extractDateString(showDatetime);
+
+        if (!reservationDate.isBlank() && MovieDate.getItems().contains(reservationDate)) {
+            MovieDate.getSelectionModel().select(reservationDate);
+        }
+
+        if (movie != null) {
+            updateAvailableTimes(movie);
+        }
+
+        this.currentFilmShowId = filmShowId;
+
+        // Ustaw salę
+        if (screenLabel != null) {
+            for (javafx.scene.Node node : timeButtonsContainer.getChildren()) {
+                if (node instanceof Button btn &&
+                        btn.getUserData() instanceof CinemaServerService.ShowtimeDto s &&
+                        s.getFilmShowId() == filmShowId && s.getScreenId() > 0) {
+                    screenLabel.setText("Plan Widowni: Sala " + s.getScreenId());
+                    break;
+                }
+            }
+        }
+
+        // Zaznacz wybrane miejsca
         selectedSeatKeys.clear();
         seatsListContainer.getChildren().clear();
 
@@ -985,8 +1174,6 @@ public class BookingController {
             String[] parts = key.split(",");
             int row = Integer.parseInt(parts[0]);
             int col = Integer.parseInt(parts[1]);
-
-            selectedSeatKeys.add(key);
             seatController.preselectSeatColor(key);
             addSeatToList(key, row, col);
         }
